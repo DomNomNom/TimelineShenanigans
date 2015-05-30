@@ -1,0 +1,273 @@
+<html style=""><head>
+<meta http-equiv="content-type" content="text/html; charset=windows-1252">
+<script type="text/javascript" src="timelines.js"></script>
+<script type="text/javascript" src="processTimelines.js"></script>
+<!-- <script type="text/javascript" src="force_files/require.js"></script> -->
+<script src="d3.js" charset="utf-8" type="text/javascript"></script>
+
+<link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<div id="d3-example">
+</div>
+
+
+<style>
+
+</style>
+
+<script type="text/javascript">
+
+// First, we specify the size of the canvas containing
+// the visualization (size of the <div> element).
+var width = 800,
+   height =  600;
+
+// We create a color scale.
+var color = d3.scale.category10();
+
+// In the <div> element, we create a <svg> graphic
+// that will contain our interactive visualization.
+var svg = d3
+    .select("#d3-example")
+    .select("svg")
+    .attr("fill", "pink")
+
+if (svg.empty()) {
+    svg = d3.select("#d3-example").append("svg")
+                .attr("width", width)
+                .attr("height", height)
+
+    svg.append("rect")
+        .attr("width", "100%")
+        .attr("height", "100%")
+        .attr("fill", "#202020");
+}
+
+//  create nodes
+var panelID2nodeID = {}
+var nodeID2panelID = {}
+var nodes = []
+var idCounter = 0
+var panelStart = 1991 // 006009 - 30; // 1901
+var panelEnd   = 2300 // 006009 + 10;
+
+panelIDs.forEach(function(panelID) {
+
+
+    nodeID = idCounter
+    idCounter += 1
+
+    panelID2nodeID[panelID] = nodeID
+    nodeID2panelID[nodeID] = panelID
+
+    newNode = {
+        id: nodeID,
+        panelID: panelID,
+        r: 10,
+        x: width * parseFloat(panelID - panelStart) / (panelEnd - panelStart)
+
+    }
+    nodes.push(newNode);
+})
+// console.log(nodes)
+
+function getOffset(index, listLength) {
+    if (listLength > 1) {
+        return (index / (listLength-1.0)) - 0.5
+    }
+    else {
+        return 0.0;
+    }
+}
+
+// create links
+var links = []
+panelIDs.forEach(function(panelID) {
+
+    characters = timelines[panelID]
+    numCharacters_source = characters.length
+    var sourceCharacter = 0
+    characters.forEach(function (character) {
+        // if (peoplenames[character[0]] != 'Rose') {
+        //     return;
+        // }
+
+        var colour = colours[character[1]]
+        character[4].forEach(function (link) {
+            targetPanelID = link[0]
+            if (!(targetPanelID in panelID2nodeID)) {
+                console.warn('target panel does not exist: ' + panelID)
+                return;
+            }
+
+            targetCharacter = link[1]
+            numCharacters_target = timelines[targetPanelID].length
+
+
+            // console.log('link: ' + panelID + " " + link[0])
+            newEdge = {
+                source: panelID2nodeID[panelID],
+                target: panelID2nodeID[link[0]],
+                // count: link[1] + 1,
+                // colour: colour,
+                // colourID: link[1],
+                colourID: character[1],
+                sourceCharacter: sourceCharacter,
+                targetCharacter: targetCharacter,
+                offset1: getOffset(sourceCharacter, numCharacters_source),
+                offset2: getOffset(targetCharacter, numCharacters_target),
+            };
+            // console.log('    ' + offset1)
+            // console.log(newEdge);
+            links.push(newEdge);
+        })
+        // console.log(' ')
+
+        if (!isRequested(character)) {
+            console.warn('character should have been filtered: ' + panelID)
+        }
+        sourceCharacter += 1
+    })
+
+})
+
+
+// We create a <line> SVG element for each link
+// in the graph.
+var link = svg.selectAll(".link")
+    .data(links)
+    .enter()
+    .append("path")
+    // .append("line")
+    // .attr("class", "link")
+    .attr("class", function (d) {
+        return "link character-colour" + d.colourID
+    })
+    // .style("stroke: '#0715CD'; ");
+
+
+// We create a <circle> SVG element for each node
+// in the graph, and we specify a few attributes.
+var node = svg.selectAll(".node")
+    .data(nodes)
+    .enter().append("circle")
+    .attr("class", "node")
+    .attr("r", function(d){ return 10; })  // radius
+    // .attr('x', function(d){ return
+    //     width * parseFloat(d.panelID - panelStart) /
+    //     (panelEnd - panelStart)
+    // })
+    .style("fill", function(d) {
+        // The node color depends on the club.
+        // return color(d.id.length);
+        if (d.id == 6009) {
+            return color(255);
+        }
+        return color(0);
+    })
+    .on("click", function(d){
+        console.log(d.panelID+': ' + JSON.stringify(timelines[d.panelID]))
+        // d3.select(this).attr('r', 25)
+        //     .style("fill","lightcoral")
+        //     .style("stroke","red");
+    });
+    // .call(force.drag);
+
+// node.append("image")
+//     .attr("x", -8)
+//     .attr("y", -8)
+//     .attr("width", 16)
+//     .attr("height", 16);
+
+// // The name of each node is the node number.
+// node.append("text")
+//     .text(function(d) { return d.id; });
+
+
+
+// We bind the positions of the SVG elements
+// to the positions of the dynamic force-directed graph,
+// at each time step.
+
+// We create a force-directed dynamic graph layout.
+var force = d3.layout.force()
+    .charge(-120)
+    .linkDistance(50)
+    .size([width, height])
+    .nodes(nodes)
+    .links(links)
+    .start()
+    .on("tick", function() {
+    // link.attr("x1", function(d) { return d.source.x + 13; })
+    //     .attr("y1", function(d) { return d.source.y + 20.0*d.offset1; })
+    //     .attr("x2", function(d) { return d.target.x - 13; })
+    //     .attr("y2", function(d) { return d.target.y + 20.0*d.offset2; });
+
+    link.attr("d", function (d) {
+        var x1 = d.source.x,
+            y1 = d.source.y,
+            x2 = d.target.x,
+            y2 = d.target.y,
+            dx = x2 - x1,
+            dy = y2 - y1,
+        // // Set dr to 0 for straight edges.
+        // // Set dr to Math.sqrt(dx * dx + dy * dy) for a simple curve.
+        // // Assuming a simple curve, decrease dr to space curves.
+        // // There's probably a better decay function that spaces things nice and evenly.
+        // dr = (
+        //     Math.sqrt(dx * dx + dy * dy) -
+        //     Math.sqrt(3000 * d.targetCharacter)
+        // )
+        // // dr = (d.targetCharacter+1) / 100;
+        // // dr = 1/(d.targetCharacter+1);
+
+        // tangent
+        tx = -dy
+        ty =  dx
+        lenTangent = Math.sqrt(tx*tx + ty*ty)
+        tx /= lenTangent
+        ty /= lenTangent
+
+
+        return (
+            // 'M' + x1 + ',' + y1 +
+            'M' +
+                (x1 + 18.0*d.offset1*tx) + ',' +
+                (y1 + 18.0*d.offset1*ty) +
+            // "A" + (dr) + "," + (dr) + " 0 0,1 " + x2 + "," + y2
+            // 'M' + (x1+5) + ',' + y1 +
+            // 'L' + (x2+15.0) + ',' + y2
+            'L' +
+                (x2 + 18.0*d.offset2*tx) + ',' +
+                (y2 + 18.0*d.offset2*ty)
+            // "M{0},{1}".format(x1, y1) +
+            // "L{0},{1}".format(x2-5, y2)
+        )
+    });
+
+    // link.attr('style', function (d) {
+    //     return 'stroke=' + d.colour + ';'
+    // })
+
+
+
+
+    // node.attr("cx", function(d) { return d.x; })
+    //     .attr("cy", function(d) { return d.y; });
+
+    node.attr("transform", function (d) {
+        targetPos = parseFloat(d.panelID - panelStart) / (panelEnd - panelStart)
+        targetPos *= width
+        change = targetPos - d.x
+        // change = change*2.0 - 1.0
+        change *= 0.01
+        d.x += change
+        return "translate(" + d.x + "," + d.y + ")";
+    });
+});
+
+node.call(force.drag)
+</script>
+
+</body></html>
