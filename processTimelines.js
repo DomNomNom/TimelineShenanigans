@@ -101,9 +101,6 @@ newPanelIDs.forEach(function(panelID) {
 
 // add the newly added nodes to the list
 Array.prototype.push.apply(newPanelIDs, toAddPanelIDs)
-// toAddPanelIDs.forEach(function(panelID) {
-//     newPanelIDs.push(panelID)
-// })
 
 
 
@@ -121,13 +118,19 @@ newPanelIDs.forEach(function(panelID) {
         })
     })
 })
-
-
 // remove all non-requested characters
 newPanelIDs.forEach(function(panelID) {
     newTimelines[panelID] = newTimelines[panelID].filter(isRequested)
 })
 
+
+
+
+
+
+
+
+// overwrite the timeline variable
 panelIDs = newPanelIDs
 timelines = newTimelines
 
