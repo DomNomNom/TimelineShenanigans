@@ -1,6 +1,15 @@
-.node {stroke: #fff; stroke-width: 1.5px;}
-.link {stroke: #999; stroke-width: 1.5px; stroke-opacity: .6; fill: none;}
 body {  background-color: #202020; }
+
+.node {
+    fill: #444;
+    stroke: #000;
+    stroke-width: 1.5px;
+}
+.node.fixed {
+  stroke: #fff;
+}
+
+.link {stroke: #999; stroke-width: 1.5px; stroke-opacity: .6; fill: none;}
 
 
 .d3-tip {

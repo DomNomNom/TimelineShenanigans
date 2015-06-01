@@ -49,7 +49,7 @@ if (svg.empty()) {
             .attr("width", width)
             .attr("height", height)
 
-    svg.append("rect")
+    background = svg.append("rect")
         .attr("width", "100%")
         .attr("height", "100%")
         .attr("fill", "#202020");
@@ -154,12 +154,12 @@ var node = svg.selectAll(".node")
     .attr("r", function(d){
         return 10;
     })  // radius
-    .style("fill", function(d) {
-        // if (d.id == 6009) {
-        //     return color(255);
-        // }
-        return color(0);
-    })
+    // .style("fill", function(d) {
+    //     // if (d.id == 6009) {
+    //     //     return color(255);
+    //     // }
+    //     return color(0);
+    // })
     // .on("click", function(d){
     //     console.log(d.panelID+': ' + JSON.stringify(timelines[d.panelID]))
     // });
@@ -274,10 +274,10 @@ var force = d3.layout.force()
             return "translate(" + d.x + "," + d.y + ")"
         })
 
-        if (selectedNode != null) {
-            // console.log(selectedNode)
-            tip.show(selectedNode)
-        }
+        // if (selectedNode != null) {
+        //     // console.log(selectedNode)
+        //     tip.show(selectedNode)
+        // }
 
     })
 
@@ -346,19 +346,59 @@ function startTipTracking(d) {
     selectedNode = d
     tip.manualTarget = d3.event.target
     tip.show(d)
-    force.stop();
+    // force.stop();
+
+    if (!(d.fixed & 1)) {
+        stopTipTracking()
+    }
 }
 
 function stopTipTracking(d) {
     tip.hide(d)
     selectedNode = null
     tip.manualTarget = null
-    force.resume();
+    // force.resume();
 }
 
+
 node
+    // .on("click", stopTipTracking)
+    .on("click", startTipTracking)
+    // .on("dblclick", startTipTracking)
+
+background
     .on("click", stopTipTracking)
-    .on("dblclick", startTipTracking)
+
+
+
+
+
+function length(x, y) {
+    return Math.sqrt(x*x + y*y)
+}
+
+force.drag()
+    .on("dragstart", function (d) {
+        stopTipTracking()
+        d.dragstart_x = d.x
+        d.dragstart_y = d.y
+        d.startedFixed = (d.fixed & 1)? true : false;
+        d3.select(this).classed("fixed", d.fixed = true)
+    })
+    .on("dragend", function (d) {
+        dragDistance = length(
+            d.dragstart_x - d.x,
+            d.dragstart_y - d.y
+        )
+
+        fixed = dragDistance > 10 || !d.startedFixed
+        d3.select(this).classed("fixed", d.fixed = fixed)
+
+        if (!fixed) {
+            stopTipTracking()
+            console.log('stahp')
+        }
+    })
 
 
 
