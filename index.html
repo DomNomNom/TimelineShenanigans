@@ -140,6 +140,8 @@ var link = svg.selectAll(".link")
     .data(links)
     .enter()
     .append("path")
+    .style("fill", "none")
+
     .style('stroke', function (d) { return colours[d.colourID] })
 
 
@@ -162,6 +164,9 @@ var node = svg.selectAll(".node")
 
 
 
+function lerp(a, b, t) {
+    return (1.0-t)*a + t*b
+}
 
 // We create a force-directed dynamic graph layout.
 var force = d3.layout.force()
@@ -197,18 +202,37 @@ var force = d3.layout.force()
             tx /= lenTangent
             ty /= lenTangent
 
+            x_source = (x1 + 18.0*d.offset1*tx)
+            y_source = (y1 + 18.0*d.offset1*ty)
+            x_target = (x2 + 18.0*d.offset2*tx)
+            y_target = (y2 + 18.0*d.offset2*ty)
+
+
+            x_target = lerp(x_source, x_target, 0.9)
+            y_target = lerp(y_source, y_target, 0.9)
+
+            arrowWidth = 1.5
 
             return (
                 // 'M' + x1 + ',' + y1 +
                 'M' +
-                    (x1 + 18.0*d.offset1*tx) + ',' +
-                    (y1 + 18.0*d.offset1*ty) +
+                    x_source + ',' +
+                    y_source +
                 // "A" + (dr) + "," + (dr) + " 0 0,1 " + x2 + "," + y2
                 // 'M' + (x1+5) + ',' + y1 +
                 // 'L' + (x2+15.0) + ',' + y2
                 'L' +
-                    (x2 + 18.0*d.offset2*tx) + ',' +
-                    (y2 + 18.0*d.offset2*ty)
+                    x_target + ',' +
+                    y_target
+                +'L' +
+                    (lerp(x_source, x_target, 0.8) + arrowWidth*tx) + ',' +
+                    (lerp(y_source, y_target, 0.8) + arrowWidth*ty)
+                +'L' +
+                    (lerp(x_source, x_target, 0.8) - arrowWidth*tx) + ',' +
+                    (lerp(y_source, y_target, 0.8) - arrowWidth*ty)
+                +'L' +
+                    x_target + ',' +
+                    y_target
                 // "M{0},{1}".format(x1, y1) +
                 // "L{0},{1}".format(x2-5, y2)
             )
@@ -230,6 +254,14 @@ var force = d3.layout.force()
         }
 
     })
+
+
+
+
+
+
+
+
 
 
 
@@ -287,7 +319,6 @@ function startTipTracking(d) {
     selectedNode = d
     tip.manualTarget = d3.event.target
     tip.show(d)
-    console.log("starting track")
     force.stop();
 }
 
@@ -295,7 +326,6 @@ function stopTipTracking(d) {
     tip.hide(d)
     selectedNode = null
     tip.manualTarget = null
-    console.log("stopping track")
     force.resume();
 }
 
