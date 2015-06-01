@@ -365,6 +365,9 @@ function processTimelines() {
             if (currentPanelID in toContract) {
                 delete toContract[currentPanelID]
             }
+            if (currentPanelID in linearSegments) {
+                delete linearSegments[currentPanelID]
+            }
 
             // add the linked contraction to the start contraction
             Array.prototype.push.apply(
