@@ -13,13 +13,8 @@
 
 
 <body>
-
-
 <div id="graph-container">
 </div>
-
-
-
 <script type="text/javascript">
 
 
@@ -32,8 +27,12 @@ if (timelines === null) {
 
 // First, we specify the size of the canvas containing
 // the visualization (size of the <div> element).
+
 var width  = 800
 var height = 600
+var width  = window.innerWidth  - 30
+var height = window.innerHeight - 50
+
 
 // We create a color scale.
 var color = d3.scale.category10();
@@ -270,7 +269,7 @@ var force = d3.layout.force()
             change = targetPos - d.x
             // change = change*2.0 - 1.0
             change *= 0.001
-            d.x += change
+            // d.x += change
             return "translate(" + d.x + "," + d.y + ")"
         })
 
@@ -339,6 +338,7 @@ var tip = d3.tip()
         //     linearSegments[d.panelID][1]
         // )
     })
+    .hide()
 
 
 var selectedNode = null;
@@ -392,6 +392,10 @@ force.drag()
         )
 
         fixed = dragDistance > 10 || !d.startedFixed
+
+        if (d.x < 0 || d.x > width ) { fixed = false }
+        if (d.y < 0 || d.y > height) { fixed = false }
+
         d3.select(this).classed("fixed", d.fixed = fixed)
 
         if (!fixed) {
@@ -407,5 +411,4 @@ svg.call(tip)
 node.call(force.drag)
 
 </script>
-
 </body></html>
