@@ -151,7 +151,9 @@ var node = svg.selectAll(".node")
     .data(nodes)
     .enter().append("circle")
     .attr("class", "node")
-    .attr("r", function(d){ return 10; })  // radius
+    .attr("r", function(d){
+        return 10;
+    })  // radius
     .style("fill", function(d) {
         // if (d.id == 6009) {
         //     return color(255);
@@ -195,8 +197,9 @@ var force = d3.layout.force()
             // // dr = (d.targetCharacter+1) / 100;
             // // dr = 1/(d.targetCharacter+1);
 
-
-
+            arrowLength = 10.0
+            arrowWidth = 1.5
+            linkBandWidth = 15.0
 
             x_source = x1
             y_source = y1
@@ -217,12 +220,10 @@ var force = d3.layout.force()
             tx = -vy
             ty =  vx
 
-
-
-            x_source += 18.0*d.offset1*tx
-            y_source += 18.0*d.offset1*ty
-            x_target += 18.0*d.offset2*tx
-            y_target += 18.0*d.offset2*ty
+            x_source += linkBandWidth * d.offset1 * tx
+            y_source += linkBandWidth * d.offset1 * ty
+            x_target += linkBandWidth * d.offset2 * tx
+            y_target += linkBandWidth * d.offset2 * ty
 
             vx = x_target - x_source
             vy = y_target - y_source
@@ -243,8 +244,6 @@ var force = d3.layout.force()
             // x_target = lerp(x_source, x_target, 0.9)
             // y_target = lerp(y_source, y_target, 0.9)
 
-            arrowLength = 10.0
-            arrowWidth = 1.5
 
             return (
                 'M' +
@@ -325,6 +324,7 @@ var tip = d3.tip()
         }
 
         html = ''
+
         containedPanelIDs[d.panelID].forEach(function (panelID) {
             html = html + '<a href="{0}" target="_blank">{1}</a> &nbsp; '.format(
                 makeURLfromPanelID(panelID),
