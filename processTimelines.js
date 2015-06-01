@@ -1,4 +1,5 @@
-var panelIDs = []
+var panelIDs;
+var containedPanelIDs;
 
 // var panelStart = 1991 // 006009 - 30; // 1901
 // var panelEnd   = 2300 // 006009 + 10;

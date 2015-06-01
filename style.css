@@ -3,45 +3,31 @@
 body {  background-color: #202020; }
 
 
-.character-colour0  { stroke: #0715CD; }
-.character-colour1  { stroke: #B536DA; }
-.character-colour2  { stroke: #E00707; }
-.character-colour3  { stroke: #4AC925; }
-.character-colour4  { stroke: #000000; }
-.character-colour5  { stroke: #00D5F2; }
-.character-colour6  { stroke: #F141EF; }
-.character-colour7  { stroke: #F2A400; }
-.character-colour8  { stroke: #1F9400; }
-.character-colour9  { stroke: #4B4B4B; }
-.character-colour10 { stroke: #FF6FF2; }
-.character-colour11 { stroke: #DE00FF; }
-.character-colour12 { stroke: #A6A6A6; }
-.character-colour13 { stroke: #38D44A; }
-.character-colour14 { stroke: #FFFFFF; }
-.character-colour15 { stroke: #C39797; }
-.character-colour16 { stroke: #BF0000; }
-.character-colour17 { stroke: #8F8F8F; }
-.character-colour18 { stroke: #FFEA00; }
-.character-colour19 { stroke: #4040FD; }
-.character-colour20 { stroke: #DF0000; }
-.character-colour21 { stroke: #A357FF; }
-.character-colour22 { stroke: #FF6000; }
-.character-colour23 { stroke: #008140; }
-.character-colour24 { stroke: #950015; }
-.character-colour25 { stroke: #A10000; }
-.character-colour26 { stroke: #A15000; }
-.character-colour27 { stroke: #A1A100; }
-.character-colour28 { stroke: #626262; }
-.character-colour29 { stroke: #FF0000; }
-.character-colour30 { stroke: #416600; }
-.character-colour31 { stroke: #008141; }
-.character-colour32 { stroke: #008282; }
-.character-colour33 { stroke: #005682; }
-.character-colour34 { stroke: #000056; }
-.character-colour35 { stroke: #2B0057; }
-.character-colour36 { stroke: #6A006A; }
-.character-colour37 { stroke: #77003C; }
-.character-colour38 { stroke: #929292; }
-.character-colour39 { stroke: #323232; }
-.character-colour40 { stroke: #126628; }
-.character-colour41 { stroke: #2ED73A; }
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+}

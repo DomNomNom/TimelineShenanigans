@@ -1,9 +1,11 @@
 <html ><head>
 <meta http-equiv="content-type" content="text/html; charset=windows-1252">
+
 <script type="text/javascript" src="timelines.js"></script>
 <script type="text/javascript" src="buildBackLinks.js"></script>
 <script type="text/javascript" src="processTimelines.js"></script>
 <script src="d3.js" charset="utf-8" type="text/javascript"></script>
+<script src="d3.tip.v0.6.3.js" charset="utf-8" type="text/javascript"></script>
 
 <link href="style.css" rel="stylesheet" type="text/css">
 
@@ -154,9 +156,9 @@ var node = svg.selectAll(".node")
         // }
         return color(0);
     })
-    .on("click", function(d){
-        console.log(d.panelID+': ' + JSON.stringify(timelines[d.panelID]))
-    });
+    // .on("click", function(d){
+    //     console.log(d.panelID+': ' + JSON.stringify(timelines[d.panelID]))
+    // });
 
 
 
@@ -221,9 +223,89 @@ var force = d3.layout.force()
             d.x += change
             return "translate(" + d.x + "," + d.y + ")"
         })
+
+        if (selectedNode != null) {
+            // console.log(selectedNode)
+            tip.show(selectedNode)
+        }
+
     })
 
 
+
+
+
+// adds "The {0} grail".format('holy')
+if (!String.prototype.format) {
+  String.prototype.format = function() {
+    var args = arguments;
+    return this.replace(/{(\d+)}/g, function(match, number) {
+      return typeof args[number] != 'undefined'
+        ? args[number]
+        : match
+      ;
+    });
+  };
+}
+
+function pad(n, width, padChar) {
+    padChar = padChar || '0';
+    n = n + '';
+    return n.length >= width ? n : new Array(width - n.length + 1).join(padChar) + n;
+}
+
+function makeURLfromPanelID(panelID) {
+    return "http://mspaintadventures.com/?s=6&p=" + pad(panelID, 6)
+}
+var tip = d3.tip()
+    .attr('class', 'd3-tip')
+    .offset([-10, 0])
+    .html(function(d) {
+        if (!d) {
+            return 'shits gone wrong'
+        }
+
+        html = ''
+        containedPanelIDs[d.panelID].forEach(function (panelID) {
+            html = html + '<a href="{0}" target="_blank">{1}</a> &nbsp; '.format(
+                makeURLfromPanelID(panelID),
+                panelID
+                // linearSegments[d.panelID][1]
+            )
+        })
+        return html
+        // return JSON.stringify()
+        // return '<a href="{0}" target="_blank"> {0} </a> <br/> {1}'.format(
+        //     makeURLfromPanelID(d.panelID),
+        //     linearSegments[d.panelID][1]
+        // )
+    })
+
+
+var selectedNode = null;
+function startTipTracking(d) {
+    selectedNode = d
+    tip.manualTarget = d3.event.target
+    tip.show(d)
+    console.log("starting track")
+    force.stop();
+}
+
+function stopTipTracking(d) {
+    tip.hide(d)
+    selectedNode = null
+    tip.manualTarget = null
+    console.log("stopping track")
+    force.resume();
+}
+
+node
+    .on("click", stopTipTracking)
+    .on("dblclick", startTipTracking)
+
+
+
+svg.call(tip)
 
 node.call(force.drag)
 
