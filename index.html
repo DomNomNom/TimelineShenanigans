@@ -17,7 +17,7 @@
 </div>
 <script type="text/javascript">
 
-colours[0] = '#2d65cd'  // make Johns colour more visible
+colours[0] = '#2d65cd'  // make John's colour more visible
 
 buildBacklinks()
 processTimelines()
@@ -35,25 +35,37 @@ var width  = window.innerWidth  - 30
 var height = window.innerHeight - 50
 
 
-// We create a color scale.
-var color = d3.scale.category10();
+
+
+function zoomed() {
+    stopTipTracking()
+    container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+}
+
+var zoom = d3.behavior.zoom()
+    .scaleExtent([0.1, 2])
+    .on("zoom", zoomed);
+
 
 // In the <div> element, we create a <svg> graphic
 // that will contain our interactive visualization.
 var svg = d3
     .select("#graph-container")
-    .select("svg")
+    .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+    .append("g")
+        .call(zoom);
 
-if (svg.empty()) {
-    svg = d3.select("#graph-container").append("svg")
-            .attr("width", width)
-            .attr("height", height)
 
-    background = svg.append("rect")
-        .attr("width", "100%")
-        .attr("height", "100%")
-        .attr("fill", "#202020");
-}
+var rect = svg.append("rect")
+    .attr("width", width)
+    .attr("height", height)
+    .style("fill", "none")
+    .style("pointer-events", "all");
+
+var container = svg.append("g")
+
 
 var panelID2nodeID = {}
 var nodeID2panelID = {}
@@ -136,7 +148,7 @@ panelIDs.forEach(function(panelID) {
 
 
 // We create a <line> SVG element for each link
-var link = svg.selectAll(".link")
+var link = container.selectAll(".link")
     .data(links)
     .enter()
     .append("path")
@@ -147,19 +159,13 @@ var link = svg.selectAll(".link")
 
 // We create a <circle> SVG element for each node
 // in the graph, and we specify a few attributes.
-var node = svg.selectAll(".node")
+var node = container.selectAll(".node")
     .data(nodes)
     .enter().append("circle")
     .attr("class", "node")
     .attr("r", function(d){
         return 10;
     })  // radius
-    // .style("fill", function(d) {
-    //     // if (d.id == 6009) {
-    //     //     return color(255);
-    //     // }
-    //     return color(0);
-    // })
     // .on("click", function(d){
     //     console.log(d.panelID+': ' + JSON.stringify(timelines[d.panelID]))
     // });
@@ -174,7 +180,7 @@ function lerp(a, b, t) {
 var force = d3.layout.force()
     .charge(-120)
     .linkDistance(50)
-    .size([width, height])
+    // .size([width, height])
     .nodes(nodes)
     .links(links)
     .start()
@@ -186,16 +192,6 @@ var force = d3.layout.force()
                 y2 = d.target.y,
                 dx = x2 - x1,
                 dy = y2 - y1,
-            // // Set dr to 0 for straight edges.
-            // // Set dr to Math.sqrt(dx * dx + dy * dy) for a simple curve.
-            // // Assuming a simple curve, decrease dr to space curves.
-            // // There's probably a better decay function that spaces things nice and evenly.
-            // dr = (
-            //     Math.sqrt(dx * dx + dy * dy) -
-            //     Math.sqrt(3000 * d.targetCharacter)
-            // )
-            // // dr = (d.targetCharacter+1) / 100;
-            // // dr = 1/(d.targetCharacter+1);
 
             arrowLength = 10.0
             arrowWidth = 1.5
@@ -248,17 +244,17 @@ var force = d3.layout.force()
             return (
                 'M' +
                     x_source + ',' +
-                    y_source +
-                'L' +
+                    y_source
+                + 'L' +
                     x_target + ',' +
                     y_target
-                +'L' +
+                + 'L' +
                     (x_target - arrowLength*vx + arrowWidth*tx) + ',' +
                     (y_target - arrowLength*vy + arrowWidth*ty)
-                +'L' +
+                + 'L' +
                     (x_target - arrowLength*vx - arrowWidth*tx) + ',' +
                     (y_target - arrowLength*vy - arrowWidth*ty)
-                +'L' +
+                + 'L' +
                     x_target + ',' +
                     y_target
             )
@@ -271,14 +267,16 @@ var force = d3.layout.force()
             // change = change*2.0 - 1.0
             change *= 0.001
             // d.x += change
-            return "translate(" + d.x + "," + d.y + ")"
+            return "translate(" +
+                d.x + "," +
+                d.y +
+            ")"
         })
 
         // if (selectedNode != null) {
         //     // console.log(selectedNode)
         //     tip.show(selectedNode)
         // }
-
     })
 
 
@@ -329,15 +327,9 @@ var tip = d3.tip()
             html = html + '<a href="{0}" target="_blank">{1}</a> &nbsp; '.format(
                 makeURLfromPanelID(panelID),
                 panelID
-                // linearSegments[d.panelID][1]
             )
         })
         return html
-        // return JSON.stringify()
-        // return '<a href="{0}" target="_blank"> {0} </a> <br/> {1}'.format(
-        //     makeURLfromPanelID(d.panelID),
-        //     linearSegments[d.panelID][1]
-        // )
     })
     .hide()
 
@@ -362,13 +354,7 @@ function stopTipTracking(d) {
 }
 
 
-node
-    // .on("click", stopTipTracking)
-    .on("click", startTipTracking)
-    // .on("dblclick", startTipTracking)
-
-background
-    .on("click", stopTipTracking)
+node.on("click", startTipTracking)
 
 
 
@@ -380,6 +366,7 @@ function length(x, y) {
 
 force.drag()
     .on("dragstart", function (d) {
+        d3.event.sourceEvent.stopPropagation();
         stopTipTracking()
         d.dragstart_x = d.x
         d.dragstart_y = d.y
@@ -394,22 +381,19 @@ force.drag()
 
         fixed = dragDistance > 10 || !d.startedFixed
 
-        if (d.x < 0 || d.x > width ) { fixed = false }
-        if (d.y < 0 || d.y > height) { fixed = false }
-
         d3.select(this).classed("fixed", d.fixed = fixed)
 
         if (!fixed) {
             stopTipTracking()
-            console.log('stahp')
         }
     })
 
 
 
-svg.call(tip)
+container.call(tip)
 
 node.call(force.drag)
+
 
 </script>
 </body></html>
