@@ -167,12 +167,20 @@ function processTimelines() {
         })
     }
 
-    forEachLink(function (link) {
-        if (!(link[0] in newTimelines) || newTimelines[link[0]].length <= link[1]) {
-            throw new Error("broken link 1");
-        }
-    })
 
+    function sanityCheck() {
+        forEachLink(function (link) {
+            if (!(link[0] in newTimelines) || newTimelines[link[0]].length <= link[1]) {
+                console.error(link)
+                console.error(link[0] in newTimelines)
+                console.error(newTimelines[link[0]])
+
+                throw new Error("broken link");
+            }
+        })
+    }
+
+    sanityCheck()
 
 
 
@@ -193,28 +201,63 @@ function processTimelines() {
 
 
 
-    // sanity check that all links are valid
-    forEachLink(function (link) {
-        if (!(link[0] in newTimelines) || newTimelines[link[0]].length <= link[1]) {
-            console.error(link)
-            console.error(link[0] in newTimelines)
-            console.error(newTimelines[link[0]])
 
-            throw new Error("broken link 2");
+    sanityCheck()
+
+
+
+    // ====== split nodes with excesive links ======
+
+    var panelsToSplit = [3840]
+    panelsToSplit.forEach(function (panelID) {
+        console.log('splitting panel ' + panelID + ': ' + JSON.stringify(newTimelines[panelID]))
+        var characters = newTimelines[panelID]
+
+        for (var charIndex=0; charIndex<characters.length; ++charIndex) {
+            var newPanelID = panelID + '[' + charIndex + ']'
+            if (newPanelID in newTimelines) {
+                throw new Error('newID is ALREADY THERE!')
+            }
+
+            newPanel = [ deepCopy(characters[charIndex]) ]
+            newTimelines[newPanelID] = newPanel
+
+            console.log('new panel ' + JSON.stringify(newPanel))
+            newPanel.forEach(function (character) {
+
+                // redirect backlinks of our links
+                character[4].forEach(function (link) {
+                    newTimelines[link[0]][link[1]][5].forEach(function (backlink) {
+                        if (backlink[0] == panelID) {
+                            backlink[0] = newPanelID
+                            backlink[1] = 0
+                        }
+                    })
+                })
+
+                // redirect links of our backlinks
+                character[5].forEach(function (backlink) {
+                    newTimelines[backlink[0]][backlink[1]][4].forEach(function (link) {
+                        if (link[0] == panelID) {
+                            link[0] = newPanelID
+                            link[1] = 0
+                        }
+                    })
+                })
+            })
         }
+
+        delete newTimelines[panelID]
+
     })
 
+    // re-do panelIDs
+    newPanelIDs = []
+    for (var key in newTimelines) {
+        newPanelIDs.push(key)
+    }
 
-
-
-
-
-
-
-
-    // // overwrite the timeline variable
-    // panelIDs = newPanelIDs
-    // timelines = newTimelines
+    sanityCheck()
 
 
 
@@ -390,3 +433,4 @@ function processTimelines() {
     }
 
 }
+

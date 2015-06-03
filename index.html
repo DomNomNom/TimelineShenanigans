@@ -39,11 +39,14 @@ var height = window.innerHeight - 50
 
 function zoomed() {
     stopTipTracking()
+    d3.event.translate[0] += 0.5 * d3.event.scale * width
+    d3.event.translate[1] += 0.5 * d3.event.scale * height
+
     container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
 }
 
 var zoom = d3.behavior.zoom()
-    .scaleExtent([0.1, 2])
+    .scaleExtent([0.3, 2])
     .on("zoom", zoomed);
 
 
@@ -65,6 +68,8 @@ var rect = svg.append("rect")
     .style("pointer-events", "all");
 
 var container = svg.append("g")
+    .attr("transform", "translate(" + [width*0.5, height*0.5] + ")")
+    // .append('g')
 
 
 var panelID2nodeID = {}
@@ -72,7 +77,7 @@ var nodeID2panelID = {}
 var nodes = []
 var idCounter = 0
 
-
+console.log(width)
 
 //  create nodes
 panelIDs.forEach(function(panelID) {
@@ -85,8 +90,7 @@ panelIDs.forEach(function(panelID) {
     newNode = {
         id: nodeID,
         panelID: panelID,
-        x: width * parseFloat(panelID - panelStart) / (panelEnd - panelStart)
-
+        x: -0.5*width + width * parseFloat(panelID - panelStart) / (panelEnd - panelStart)
     }
     nodes.push(newNode);
 })
@@ -178,8 +182,8 @@ function lerp(a, b, t) {
 
 // We create a force-directed dynamic graph layout.
 var force = d3.layout.force()
-    .charge(-120)
-    .linkDistance(50)
+    .charge(-200)
+    .linkDistance(20)
     // .size([width, height])
     .nodes(nodes)
     .links(links)
@@ -261,11 +265,11 @@ var force = d3.layout.force()
         })
 
         node.attr("transform", function (d) {
-            targetPos = parseFloat(d.panelID - panelStart) / (panelEnd - panelStart)
-            targetPos *= width
-            change = targetPos - d.x
+            // targetPos = parseFloat(d.panelID - panelStart) / (panelEnd - panelStart)
+            // targetPos *= width
+            // change = targetPos - d.x
             // change = change*2.0 - 1.0
-            change *= 0.001
+            // change *= 0.001
             // d.x += change
             return "translate(" +
                 d.x + "," +
