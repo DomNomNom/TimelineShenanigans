@@ -9,12 +9,14 @@ var panelsToSplit = [
 ]
 
 
-var panelStart = 1991 // 006009 - 30; // 1901
+var panelStart =  1000 // 006009 - 30; // 1901
 var panelEnd   = 10000 // 006009 + 10;
 // var panelStart = 006009 - 3000; // 1901
 // var panelEnd   = 006009 + 1000;
 console.log('starting with panels ' + panelStart + '..' + panelEnd)
 
+var lowest = {}  // given a character, what's the first
+var intoductionPanelIDs = []
 
 function processTimelines() {
     function isRequested(character) {
@@ -28,7 +30,7 @@ function processTimelines() {
 
         name = peoplenames[character[0]]
         requestedNames = ['Rose', 'Dave', 'John', 'Jade']
-        hasRequestedName = requestedNames.indexOf(name) >= 0
+        hasRequestedName = (requestedNames.indexOf(name) >= 0)
         return hasRequestedName //|| isInRequestedGroup
         return true
         // return (
@@ -92,10 +94,10 @@ function processTimelines() {
     }
 
 
+
     function deepCopy(obj) {
         return JSON.parse(JSON.stringify(obj))
     }
-
 
 
     // add panels that are selected by ID
@@ -218,6 +220,21 @@ function processTimelines() {
     buildBacklinks(newTimelines)
 
     sanityCheck()
+
+    // create the intoduction panels
+    newPanelIDs.forEach(function (panelID) {
+        characters = newTimelines[panelID]
+        var hasRequestedCharacter = false
+        characters.forEach(function (character) {
+            charNameID = character[0]
+            if (['Rose', 'Dave', 'John', 'Jade'].indexOf(peoplenames[charNameID]) >= 0) {
+                if (!(charNameID in lowest)) {
+                    lowest[charNameID] = panelID
+                    intoductionPanelIDs.push(panelID)
+                }
+            }
+        })
+    })
 
 
 

@@ -177,8 +177,15 @@ var node = container.selectAll(".node")
     //     return '#FFF000'
     // })
 
-    .attr("r", function(d){
-        return 10;
+    .attr("r", function(d) {
+        var radius = 10
+        intoductionPanelIDs.forEach(function (panelID) {
+            if (containedPanelIDs[d.panelID].indexOf(panelID + '') >= 0) {
+                radius = 25
+                console.log('FOUND '  + panelID)
+            }
+        })
+        return radius;
     })  // radius
     // .on("click", function(d){
     //     console.log(d.panelID+': ' + JSON.stringify(timelines[d.panelID]))
@@ -200,9 +207,9 @@ var force = d3.layout.force()
     .links(links)
     .start()
     .on("tick", function() {
-        if (force.alpha() < 0.01) {
-            force.alpha(0.01)
-        }
+        // if (force.alpha() < 0.01) {
+            force.alpha(0.1)
+        // }
         // console.log(force.alpha())
         link.attr("d", function (d) {
             var x1 = d.source.x,
