@@ -1,13 +1,18 @@
 var panelIDs;
 var containedPanelIDs;
 
-var panelsToSplit = [3840]
+var panelsToSplit = [
+    3840,
+    4827,  // jade: enter
+    6844,  // ascend more casually
+    4478,  // make her pay
+]
 
 
-// var panelStart = 1991 // 006009 - 30; // 1901
-// var panelEnd   = 2300 // 006009 + 10;
-var panelStart = 006009 - 3000; // 1901
-var panelEnd   = 006009 + 1000;
+var panelStart = 1991 // 006009 - 30; // 1901
+var panelEnd   = 10000 // 006009 + 10;
+// var panelStart = 006009 - 3000; // 1901
+// var panelEnd   = 006009 + 1000;
 console.log('starting with panels ' + panelStart + '..' + panelEnd)
 
 
@@ -16,10 +21,16 @@ function processTimelines() {
         if (character.length != 6) {
             throw new Error("invalid argument. it's not a character: " + JSON.stringify(character))
         }
+
+        group = groups[character[3]]
+        requestedGroups = ["Kids' Exiles", "Kids' Agents"]
+        isInRequestedGroup = requestedGroups.indexOf(group) >= 0
+
         name = peoplenames[character[0]]
         requestedNames = ['Rose', 'Dave', 'John', 'Jade']
-        return requestedNames.indexOf(name) >= 0
-        // return true
+        hasRequestedName = requestedNames.indexOf(name) >= 0
+        return hasRequestedName //|| isInRequestedGroup
+        return true
         // return (
         //     name == 'Rose' ||
         //     // name == 'John' ||
@@ -117,7 +128,6 @@ function processTimelines() {
     })
 
 
-
     // add panels that are being linked to
     // if we don't have them
     // but without their links
@@ -136,6 +146,7 @@ function processTimelines() {
                             newLinkedCharacter[4] = []
                             newLinkedCharacters.push(newLinkedCharacter)
                         })
+
 
                         newTimelines[panelID] = newLinkedCharacters
                         toAddPanelIDs.push(panelID)
@@ -204,6 +215,7 @@ function processTimelines() {
 
 
 
+    buildBacklinks(newTimelines)
 
     sanityCheck()
 
@@ -212,6 +224,10 @@ function processTimelines() {
     // ====== split nodes with excesive links ======
 
     panelsToSplit.forEach(function (panelID) {
+        if (!(panelID in newTimelines)) {  // can't split what's not there
+            return
+        }
+
         console.log('splitting panel ' + panelID + ': ' + JSON.stringify(newTimelines[panelID]))
         var characters = newTimelines[panelID]
 
@@ -224,7 +240,7 @@ function processTimelines() {
             newPanel = [ deepCopy(characters[charIndex]) ]
             newTimelines[newPanelID] = newPanel
 
-            console.log('new panel ' + JSON.stringify(newPanel))
+            console.log('new panel ' + newPanelID + ': ' + JSON.stringify(newPanel))
             newPanel.forEach(function (character) {
 
                 // redirect backlinks of our links

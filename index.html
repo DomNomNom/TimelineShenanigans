@@ -19,7 +19,7 @@
 
 colours[0] = '#2d65cd'  // make John's colour more visible
 
-buildBacklinks()
+buildBacklinks(timelines)
 processTimelines()
 
 if (timelines === null) {
@@ -46,7 +46,7 @@ function zoomed() {
 }
 
 var zoom = d3.behavior.zoom()
-    .scaleExtent([0.3, 2])
+    .scaleExtent([0.2, 2])
     .on("zoom", zoomed);
 
 
@@ -200,6 +200,10 @@ var force = d3.layout.force()
     .links(links)
     .start()
     .on("tick", function() {
+        if (force.alpha() < 0.01) {
+            force.alpha(0.01)
+        }
+        // console.log(force.alpha())
         link.attr("d", function (d) {
             var x1 = d.source.x,
                 y1 = d.source.y,

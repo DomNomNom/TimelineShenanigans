@@ -1,10 +1,15 @@
 
 
-function buildBacklinks() {
+function buildBacklinks(timelines) {
     // add a 6th property to each character in each panel: back links
     for (var panelID in timelines) {
         timelines[panelID].forEach(function (character) {
-            character.push([])
+            if (character.length <= 5) {
+                character.push([])
+            }
+            else {
+                character[5] = []
+            }
         })
     }
 
