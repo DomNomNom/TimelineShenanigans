@@ -8,6 +8,9 @@ body {  background-color: #202020; }
 .node.fixed {
   stroke: #fff;
 }
+.node.split {
+  fill: #448;
+}
 
 .link {stroke: #999; stroke-width: 1.5px; stroke-opacity: .6; fill: none;}
 

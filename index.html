@@ -157,7 +157,6 @@ var link = container.selectAll(".link")
     .enter()
     .append("path")
     .style("fill", "none")
-
     .style('stroke', function (d) { return colours[d.colourID] })
 
 
@@ -166,7 +165,18 @@ var link = container.selectAll(".link")
 var node = container.selectAll(".node")
     .data(nodes)
     .enter().append("circle")
-    .attr("class", "node")
+    .attr("class", function (d) {
+        var cls = "node"
+        var basePanelID = d.panelID.split('[')[0]
+        if (panelsToSplit == basePanelID) {
+            cls += " split"
+        }
+        return cls
+    })
+    // .style("fill", function (d) {
+    //     return '#FFF000'
+    // })
+
     .attr("r", function(d){
         return 10;
     })  // radius
@@ -182,8 +192,9 @@ function lerp(a, b, t) {
 
 // We create a force-directed dynamic graph layout.
 var force = d3.layout.force()
-    .charge(-200)
-    .linkDistance(20)
+    .gravity(0)
+    .charge(-100)
+    .linkDistance(50)
     // .size([width, height])
     .nodes(nodes)
     .links(links)
@@ -392,11 +403,11 @@ force.drag()
         }
     })
 
+node.call(force.drag)
 
 
 container.call(tip)
 
-node.call(force.drag)
 
 
 </script>

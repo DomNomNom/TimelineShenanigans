@@ -1,6 +1,9 @@
 var panelIDs;
 var containedPanelIDs;
 
+var panelsToSplit = [3840]
+
+
 // var panelStart = 1991 // 006009 - 30; // 1901
 // var panelEnd   = 2300 // 006009 + 10;
 var panelStart = 006009 - 3000; // 1901
@@ -208,7 +211,6 @@ function processTimelines() {
 
     // ====== split nodes with excesive links ======
 
-    var panelsToSplit = [3840]
     panelsToSplit.forEach(function (panelID) {
         console.log('splitting panel ' + panelID + ': ' + JSON.stringify(newTimelines[panelID]))
         var characters = newTimelines[panelID]
