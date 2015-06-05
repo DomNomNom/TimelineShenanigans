@@ -4,6 +4,7 @@
 <script type="text/javascript" src="timelines.js"></script>
 <script type="text/javascript" src="buildBackLinks.js"></script>
 <script type="text/javascript" src="processTimelines.js"></script>
+<script type="text/javascript" src="createGraphData.js"></script>
 <script src="d3.js" charset="utf-8" type="text/javascript"></script>
 <script src="d3.tip.v0.6.3.js" charset="utf-8" type="text/javascript"></script>
 
@@ -207,10 +208,6 @@ var force = d3.layout.force()
     .links(links)
     .start()
     .on("tick", function() {
-        // if (force.alpha() < 0.01) {
-            force.alpha(0.1)
-        // }
-        // console.log(force.alpha())
         link.attr("d", function (d) {
             var x1 = d.source.x,
                 y1 = d.source.y,
@@ -419,7 +416,7 @@ node.call(force.drag)
 
 container.call(tip)
 
-
+force.alpha(0.9)
 
 </script>
 </body></html>
