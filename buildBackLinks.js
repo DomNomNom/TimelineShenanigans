@@ -44,6 +44,5 @@ function buildBacklinks(timelines) {
         }
     }
 
-    console.log('backlinks created.')
 }
 

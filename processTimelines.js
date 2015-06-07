@@ -245,7 +245,7 @@ function processTimelines() {
             return
         }
 
-        console.log('splitting panel ' + panelID + ': ' + JSON.stringify(newTimelines[panelID]))
+        // console.log('splitting panel ' + panelID + ': ' + JSON.stringify(newTimelines[panelID]))
         var characters = newTimelines[panelID]
 
         for (var charIndex=0; charIndex<characters.length; ++charIndex) {
@@ -257,7 +257,7 @@ function processTimelines() {
             newPanel = [ deepCopy(characters[charIndex]) ]
             newTimelines[newPanelID] = newPanel
 
-            console.log('new panel ' + newPanelID + ': ' + JSON.stringify(newPanel))
+            // console.log('new panel ' + newPanelID + ': ' + JSON.stringify(newPanel))
             newPanel.forEach(function (character) {
 
                 // redirect backlinks of our links
