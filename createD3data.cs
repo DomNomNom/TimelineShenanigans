@@ -28,22 +28,29 @@ d3link = {
 ###
 
 
-window.createD3data = (graph) ->
+window.createD3data = (graph, bodyIsInteresting) ->
+    ###
     build the set of included bodies
-        filter bodies if they match a function
+    ###
+
+    interestingBodies = {}
+    for id, body of graph.bodies
+        if bodyIsInteresting body
+            interestingBodies[id] = body
 
 
     ###
-
-    split:
+    join bodies into moments unless the moment is split
+    ###
     d3nodes = {}
-    loop through each included body:
-        var d3node;
+    for id, body of interestingBodies
+        d3node = null
         if body.moment.split
+            log 'TODO: test this !'
             d3node = {
                 bodies: [ body ]
             }
-            d3nodes['body:#{bodyID}']: d3node
+            d3nodes['body:#{id}'] = d3node
         else
             nodeKey = 'moment:#{body.key_moment}'
             if nodeKey of d3nodes
@@ -57,27 +64,48 @@ window.createD3data = (graph) ->
                 assert body.moment is d3node.moment
                 d3node.bodies.push(body)
 
+        assert d3node isnt null
         body.d3node = d3node
 
-    assert:
-        (if !moment.split then    no body in moment is a d3node, there is a  d3node for moment)
-        (if  moment.split then every body in moment is a d3node, there is no d3node for moment)
-        each body has a d3node
-        each d3node has a list of bodies
-        each body.d3node.bodies.indexof(body) >= 0
+    # some assertions
+    for momentID, moment in graph.moments
+        if  moment.split
+            assert 'moment:#{momentID}' not of d3nodes
+            for id, body of moment.bodies
+                if bodyIsInteresting(body)
+                    assert 'body:#{id}' of d3nodes
+                else
+                    assert 'body:#{id}' not of d3nodes
+        else
+            isInterestingMoment = false
+            for id, body of moment.bodies
+                assert 'body:#{id}' not of d3nodes
+                if bodyIsInteresting(body)
+                    isInterestingMoment = true
 
-    # build the set of included links
-    #     filter links where both ends are included bodies
+            if isInterestingMoment
+                assert 'moment:#{momentID}' of d3nodes
+    for id, body of interestingBodies
+        # each interesting body is contained in a d3 node
+        assert body in body.d3node.bodies
+
+    # build the set of interesing links
+    interestingLinks = []
+    for link in graph.links
+        if (
+            link.key_prev of interestingBodies and
+            link.key_next of interestingBodies
+        )
+            interestingLinks.push(interestingLinks)
 
 
-    ###
     getOffset = (index, listLength) ->
-        if (listLength > 1)
+        if listLength > 1
             return (index / (listLength-1.0)) - 0.5
         else
-            return 0.0;
+            return 0.0
 
-    d3links = {}
+    d3links = []
     for link in selectedLinks
         body_prev = link.body_prev
         body_next = link.body_next
@@ -87,18 +115,20 @@ window.createD3data = (graph) ->
         index_prev = bodies_prev.indexOf(link.body_prev)
         index_next = bodies_next.indexOf(link.body_next)
 
-        id = body_prev + '|' + body_next
-        d3links[id] = {
+        # id = body_prev + '|' + body_next
+        d3links.push([
             node_prev: body_prev.d3node
             node_next: body_next.d3node
             colour: body_prev.description.colour
             offset_prev: getOffset(index_prev, bodies_prev.length)
             offset_next: getOffset(index_next, bodies_next.length)
-        }
+        ])
 
 
 
-    # select nodes for contraction
+    ###
+    select nodes for contraction
+    ###
     for id, d3node of d3nodes
         # true - no next links yet
         # (d3node)  - we have a (outwards) 1:1 relationship
@@ -110,7 +140,7 @@ window.createD3data = (graph) ->
         d3node.next = contractible
         d3node.id = id
 
-    for id, d3link of d3links
+    for d3link in d3links
         node_prev = d3link.prev
         node_next = d3link.next
 
@@ -193,7 +223,7 @@ window.createD3data = (graph) ->
     select the links that will be kept
     ###
     contractedLinks = {}
-    for link in selectedLinks
+    for link in d3links
         body_prev = link.body_prev
         body_next = link.body_next
 
@@ -202,8 +232,6 @@ window.createD3data = (graph) ->
         if contracted_prev is contracted_next
             continue
 
-        id = body_prev + '|' + body_next
-        link = d3links[id]
         link.contracted_prev = contracted_prev
         link.contracted_next = contracted_next
         contractedLinks[id] = link
@@ -212,6 +240,7 @@ window.createD3data = (graph) ->
 
     ###
     make everything into a list
+    and add the properties that d3 uses
     ###
     list_contrations = ( c for id, c in contractions )
     for id in [0 .. list_contrations.length - 1]

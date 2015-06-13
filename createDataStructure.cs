@@ -27,8 +27,14 @@ data (JSON)
         }
 
         moments: {
-            1901: {}
-            1902: {}
+            1901: {
+                contractible: true
+                split: false
+            }
+            1902: {
+                contractible: true
+                split: false
+            }
         }
 
         bodies: {
@@ -73,6 +79,7 @@ class Graph
         for panelID, panel of timelines
             @moments[panelID] = {
                 contractible: true
+                split: false
             }
 
         # create a map such that bodyIDs make more sense
@@ -252,6 +259,9 @@ txt = JSON.stringify(graph.descriptions, null, 4)
 log 'stringify 2'
 window.d3.select('#debugtext').html(txt)
 log 'stringify 3'
+
+graph.buildPointers()
+window.createD3data(graph, (body) -> true)
 
 # log = console.log
 # log "done."
