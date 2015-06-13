@@ -60,13 +60,6 @@ Generated relations (object references):
 Serialisation should care about ordering things so it can potentially be tract by git.
 ###
 
-# shorthands
-str = (x) -> JSON.stringify x
-log = (x) -> console.log x
-warn = (x) -> console.warn x
-assert = (condition, message) ->
-    if not condition
-        throw message or "Assertion failed"
 
 
 
@@ -78,7 +71,9 @@ class Graph
         # create moments
         @moments = {}
         for panelID, panel of timelines
-            @moments[panelID] = {}
+            @moments[panelID] = {
+                contractible: true
+            }
 
         # create a map such that bodyIDs make more sense
         oldkey2descriptionKey = {
