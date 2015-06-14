@@ -254,7 +254,7 @@ $ ->
             stopTipTracking()
             d.dragstart_x = d.x
             d.dragstart_y = d.y
-            d.startedFixed = (d.fixed & 1)? true : false
+            d.startedFixed = if d.fixed & 1 then true else false
             d3.select(this).classed("fixed", d.fixed = true)
         )
         .on("dragend", (d) ->
