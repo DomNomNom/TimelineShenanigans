@@ -78,6 +78,7 @@ class Graph
         @moments = {}
         for panelID, panel of timelines
             @moments[panelID] = {
+                panelID: panelID
                 contractible: true
                 split: false
             }

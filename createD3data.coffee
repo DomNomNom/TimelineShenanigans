@@ -49,6 +49,7 @@ window.createD3data = (graph, bodyIsInteresting) ->
             log 'TODO: test this !'
             d3node = {
                 bodies: [ body ]
+                moment: body.moment
             }
             d3nodes["body: #{ id }"] = d3node
         else
@@ -116,13 +117,14 @@ window.createD3data = (graph, bodyIsInteresting) ->
         index_next = bodies_next.indexOf(link.body_next)
 
         # id = body_prev + '|' + body_next
-        d3links.push({
+        link = {
             node_prev: body_prev.d3node
             node_next: body_next.d3node
             colour: body_prev.description.colour
             offset_prev: getOffset(index_prev, bodies_prev.length)
             offset_next: getOffset(index_next, bodies_next.length)
-        })
+        }
+        d3links.push(link)
 
 
 
@@ -208,7 +210,9 @@ window.createD3data = (graph, bodyIsInteresting) ->
 
         contractionID = subNodes[0].id
         contraction = {
-            # id: contractionID
+            x: 0.1 * subNodes[0].moment.panelID
+            y: 0.0
+            id: contractionID
             subNodes: subNodes
         }
         contractions[contractionID] = contraction
@@ -222,7 +226,7 @@ window.createD3data = (graph, bodyIsInteresting) ->
     ###
     select the links that will be kept
     ###
-    contractedLinks = {}
+    contractedLinks = []
     for link in d3links
         contracted_prev = link.node_prev.contraction
         contracted_next = link.node_next.contraction
@@ -231,7 +235,7 @@ window.createD3data = (graph, bodyIsInteresting) ->
 
         link.contracted_prev = contracted_prev
         link.contracted_next = contracted_next
-        contractedLinks[id] = link
+        contractedLinks.push(link)
 
 
 
@@ -243,14 +247,13 @@ window.createD3data = (graph, bodyIsInteresting) ->
     for id in [0 .. list_contrations.length - 1]
         list_contrations[id].id = id
 
-    list_links = ( l for id, l in contractedLinks )
-    for link in list_links
+
+    for link in contractedLinks
         link.source = link.contracted_prev.id
         link.target = link.contracted_next.id
 
-
     return {
         nodes: list_contrations
-        links: list_links
+        links: contractedLinks
     }
 

@@ -1,7 +1,7 @@
 
 # shorthands
 window.str = (x) -> JSON.stringify x
-window.log = (x) -> console.log x
+# window.log = (x) -> console.log x
 window.warn = (x) -> console.warn x
 window.assert = (condition, message) ->
     if not condition
@@ -15,3 +15,12 @@ window.flatten = (lists) ->
     for list in lists
         extendArray(flat, list)
     return flat
+
+window.lerp = (a, b, t) ->
+    (1.0 - t) * a   +   t * b
+
+# padds a string to be of a certian width
+window.pad = (n, width, padChar) ->
+    padChar = padChar || '0'
+    n = n + ''
+    return n.length >= width ? n : new Array(width - n.length + 1).join(padChar) + n
