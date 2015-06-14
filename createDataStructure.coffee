@@ -251,6 +251,3 @@ class Graph
 
 window.Graph = Graph
 
-# log = console.log
-# log "done."
-

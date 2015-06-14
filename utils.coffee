@@ -24,3 +24,11 @@ window.pad = (n, width, padChar) ->
     padChar = padChar || '0'
     n = n + ''
     return n.length >= width ? n : new Array(width - n.length + 1).join(padChar) + n
+
+
+# same as console.log but does it at most 100 times
+counter100 = 0
+window.print100 = (string) ->
+    counter100 += 1
+    if counter100 <= 100
+        console.log string

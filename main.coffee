@@ -1,4 +1,10 @@
 $ ->
+    colours[0] = '#2d65cd'  # make John's colour more visible
+
+    window.width  = window.innerWidth  - 30
+    window.height = window.innerHeight - 50
+
+
     graph = new Graph(timelines)
 
     filterFunction = (body) ->
@@ -20,10 +26,6 @@ $ ->
 
 
 
-    window.colours[0] = '#2d65cd'  # make John's colour more visible
-
-    width  = window.innerWidth  - 30
-    height = window.innerHeight - 50
 
 
 
@@ -102,8 +104,6 @@ $ ->
 
 
 
-
-
     # create a force-directed dynamic graph layout.
     force = d3.layout.force()
         .gravity(0)
@@ -124,7 +124,7 @@ $ ->
 
                 arrowLength = 10.0
                 arrowWidth = 1.5
-                linkBandWidth = 5.0
+                linkBandWidth = 15.0
 
                 x_source = x1
                 y_source = y1
@@ -144,6 +144,7 @@ $ ->
                 # tangent
                 tx = - vy
                 ty =  vx
+
 
                 x_source += linkBandWidth * d.offset_prev * tx
                 y_source += linkBandWidth * d.offset_prev * ty

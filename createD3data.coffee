@@ -100,6 +100,7 @@ window.createD3data = (graph, bodyIsInteresting) ->
             interestingLinks.push(link)
 
 
+
     getOffset = (index, listLength) ->
         if listLength > 1
             return (index / (listLength-1.0)) - 0.5
@@ -113,8 +114,8 @@ window.createD3data = (graph, bodyIsInteresting) ->
 
         bodies_prev = body_prev.d3node.bodies
         bodies_next = body_next.d3node.bodies
-        index_prev = bodies_prev.indexOf(link.body_prev)
-        index_next = bodies_next.indexOf(link.body_next)
+        index_prev = bodies_prev.indexOf(link.prev)
+        index_next = bodies_next.indexOf(link.next)
 
         # id = body_prev + '|' + body_next
         link = {
@@ -209,9 +210,11 @@ window.createD3data = (graph, bodyIsInteresting) ->
             subNodes.push current
 
         contractionID = subNodes[0].id
+        panelID = subNodes[0].moment.panelID
         contraction = {
-            x: 0.1 * subNodes[0].moment.panelID
-            y: 0.0
+            # width is a global variable
+            x: 10000.0 * (panelID / 10000.0 - 0.5)
+            y: (panelID % 400) - 200
             id: contractionID
             subNodes: subNodes
         }
