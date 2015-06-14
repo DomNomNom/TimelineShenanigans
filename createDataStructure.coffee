@@ -112,7 +112,7 @@ class Graph
                 oldkey = '' + oldbody.slice(0, 4)
                 nameCombos[oldbody[0]][oldkey] = true
 
-        log 'duplicates: '
+        # log 'duplicates: '
         for i, dict of nameCombos
             name = peoplenames[i]
             dictSize = 0
@@ -124,7 +124,7 @@ class Graph
                 for oldkey, _ of dict
                     oldkey2descriptionKey[oldkey] = name
             else if dictSize > 1
-                log('   '  + name + ': ' + (str dict))
+                # log('   '  + name + ': ' + (str dict))
                 for oldkey, _ of dict
                     if oldkey not of oldkey2descriptionKey
                         warn "character should be manually renamed: " + oldkey
@@ -248,20 +248,7 @@ class Graph
             delete link.next
 
 
-
-graph = new Graph(timelines)
-graph.deletePointers()
-
-# log JSON.stringify(graph, null, 4)
-log 'stringify 1'
-# txt = JSON.stringify(graph, null, 4)
-txt = JSON.stringify(graph.descriptions, null, 4)
-log 'stringify 2'
-window.d3.select('#debugtext').html(txt)
-log 'stringify 3'
-
-graph.buildPointers()
-window.createD3data(graph, (body) -> true)
+window.Graph = Graph
 
 # log = console.log
 # log "done."

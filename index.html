@@ -3,6 +3,7 @@
 
 <script type="text/javascript" src="timelines.js"></script>
 <script src="d3.js" charset="utf-8" type="text/javascript"></script>
+<script src="jquery-2.1.4.min.js" charset="utf-8" type="text/javascript"></script>
 <!--
 <script src="d3.tip.v0.6.3.js" charset="utf-8" type="text/javascript"></script>
 <script type="text/javascript" src="buildBackLinks.js"></script>
@@ -12,6 +13,7 @@
 <script type="text/javascript" src="compiledCoffeeScript/utils.js"></script>
 <script type="text/javascript" src="compiledCoffeeScript/createD3data.js"></script>
 <script type="text/javascript" src="compiledCoffeeScript/createDataStructure.js"></script>
+<script type="text/javascript" src="compiledCoffeeScript/main.js"></script>
 
 <link href="style.css" rel="stylesheet" type="text/css">
 
@@ -33,7 +35,7 @@ bluh
 colours[0] = '#2d65cd'  // make John's colour more visible
 
 buildBacklinks(timelines)
-processTimelines()
+processTimelines(
 
 if (timelines === null) {
     throw new Error("timelines are null")

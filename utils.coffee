@@ -1,6 +1,4 @@
 
-console.log 'I EXIST'
-
 # shorthands
 window.str = (x) -> JSON.stringify x
 window.log = (x) -> console.log x
