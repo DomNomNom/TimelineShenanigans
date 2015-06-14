@@ -1,6 +1,10 @@
 $ ->
     graph = new Graph(timelines)
-    d3data = createD3data(graph, (body) -> true)
+
+    filterFunction = (body) ->
+        'Kids' in body.description.groups
+
+    d3data = createD3data(graph, filterFunction)
 
 
 
@@ -120,7 +124,7 @@ $ ->
 
                 arrowLength = 10.0
                 arrowWidth = 1.5
-                linkBandWidth = 15.0
+                linkBandWidth = 5.0
 
                 x_source = x1
                 y_source = y1
@@ -129,7 +133,7 @@ $ ->
 
                 vx = x_target - x_source
                 vy = y_target - y_source
-                lenV = Math.sqrt(vx*vx + vy*vy)
+                lenV = Math.sqrt(vx * vx + vy * vy)
                 vx /= lenV
                 vy /= lenV
 
@@ -138,7 +142,7 @@ $ ->
 
 
                 # tangent
-                tx = -vy
+                tx = - vy
                 ty =  vx
 
                 x_source += linkBandWidth * d.offset_prev * tx
@@ -148,10 +152,10 @@ $ ->
 
                 vx = x_target - x_source
                 vy = y_target - y_source
-                lenV = Math.sqrt(vx*vx + vy*vy)
+                lenV = Math.sqrt(vx * vx + vy * vy)
                 vx /= lenV
                 vy /= lenV
-                tx = -vy
+                tx = - vy
                 ty =  vx
 
 
@@ -165,7 +169,15 @@ $ ->
                 # x_target = lerp(x_source, x_target, 0.9)
                 # y_target = lerp(y_source, y_target, 0.9)
 
-                txt = "M#{ x_source },#{ y_source }L#{x_target},#{y_target}"
+                txt = "M#{ x_source },#{ y_source }"
+                txt += "L#{ x_target },#{ y_target }"
+                txt += "L"
+                txt +=    "#{ x_target - arrowLength * vx + arrowWidth * tx },"
+                txt +=    "#{ y_target - arrowLength * vy + arrowWidth * ty }"
+                txt += "L"
+                txt +=    "#{ x_target - arrowLength * vx - arrowWidth * tx },"
+                txt +=    "#{ y_target - arrowLength * vy - arrowWidth * ty }"
+                txt += "L#{ x_target },#{ y_target }"
                 return txt
 
                 return (
@@ -176,11 +188,11 @@ $ ->
                         x_target + ',' +
                         y_target
                     + 'L' +
-                        (x_target - arrowLength*vx + arrowWidth*tx) + ',' +
-                        (y_target - arrowLength*vy + arrowWidth*ty)
+                        (x_target - arrowLength * vx + arrowWidth * tx) + ',' +
+                        (y_target - arrowLength * vy + arrowWidth * ty)
                     + 'L' +
-                        (x_target - arrowLength*vx - arrowWidth*tx) + ',' +
-                        (y_target - arrowLength*vy - arrowWidth*ty)
+                        (x_target - arrowLength * vx - arrowWidth * tx) + ',' +
+                        (y_target - arrowLength * vy - arrowWidth * ty)
                     + 'L' +
                         x_target + ',' +
                         y_target
@@ -264,4 +276,4 @@ $ ->
 
     container.call(tip)
 
-    # force.alpha(0.5)
+    force.alpha(0.2)
