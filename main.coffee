@@ -1,8 +1,27 @@
+
+
+
+resize = () ->
+    # TODO: make resizing better
+    $('#sidebar').height(window.innerHeight)
+
+window.onresize = resize
+
+
+
+
 $ ->
+    resize()
     colours[0] = '#2d65cd'  # make John's colour more visible
 
-    window.width  = window.innerWidth  - 30
-    window.height = window.innerHeight - 50
+    graphContainer = $("#graph-container")
+    #window.width  = window.innerWidth  - 30
+    #window.height = window.innerHeight - 50
+    console.log graphContainer
+    width  = graphContainer.width()
+    height = window.innerHeight - 10
+    console.log 'size: ' + [width, height]
+
 
 
     graph = new Graph(timelines)
@@ -31,19 +50,19 @@ $ ->
 
     selectedNode = null
     startTipTracking = (d) ->
-        selectedNode = d
-        tip.manualTarget = d3.event.target
-        tip.show(d)
-        # force.stop()
+        # selectedNode = d
+        # tip.manualTarget = d3.event.target
+        # tip.show(d)
+        # # force.stop()
 
-        if not (d.fixed & 1)
-            stopTipTracking()
+        # if not (d.fixed & 1)
+        #     stopTipTracking()
 
     stopTipTracking = (d) ->
-        tip.hide(d)
-        selectedNode = null
-        tip.manualTarget = null
-        # force.resume()
+        # tip.hide(d)
+        # selectedNode = null
+        # tip.manualTarget = null
+        # # force.resume()
 
 
     zoomed = () ->
@@ -59,8 +78,7 @@ $ ->
         .on("zoom", zoomed)
 
 
-    svg = d3
-        .select("#graph-container")
+    svg = d3.select("#graph-container")
         .append("svg")
             .attr("width", width)
             .attr("height", height)
@@ -210,32 +228,32 @@ $ ->
 
 
 
-    tip = d3.tip()
-        .attr('class', 'd3-tip')
-        .offset([-10, 0])
-        .html((d) ->
-            if not d
-                return 'shits gone wrong'
+    # tip = d3.tip()
+    #     .attr('class', 'd3-tip')
+    #     .offset([-10, 0])
+    #     .html((d) ->
+    #         if not d
+    #             return 'shits gone wrong'
 
-            html = 'blah blah'
+    #         html = 'blah blah'
 
-            # for panelID in containedPanelIDs[d.panelID]
-            #     html += """
-            #         <a
-            #          href="http:#mspaintadventures.com/?s=6&p=#{ pad(panelID, 6) }"
-            #          target="_blank"
-            #         >
-            #             #{ panelID }
-            #         </a>
-            #         &nbsp
-            #     """
-            #     # html += '<a href="{0}" target="_blank">{1}</a> &nbsp '.format(
-            #     #     "http:#mspaintadventures.com/?s=6&p=" + pad(panelID, 6),
-            #     #     panelID
-            #     # )
-            return html
-        )
-        .hide()
+    #         # for panelID in containedPanelIDs[d.panelID]
+    #         #     html += """
+    #         #         <a
+    #         #          href="http:#mspaintadventures.com/?s=6&p=#{ pad(panelID, 6) }"
+    #         #          target="_blank"
+    #         #         >
+    #         #             #{ panelID }
+    #         #         </a>
+    #         #         &nbsp
+    #         #     """
+    #         #     # html += '<a href="{0}" target="_blank">{1}</a> &nbsp '.format(
+    #         #     #     "http:#mspaintadventures.com/?s=6&p=" + pad(panelID, 6),
+    #         #     #     panelID
+    #         #     # )
+    #         return html
+    #     )
+    #     .hide()
 
 
 
@@ -275,6 +293,6 @@ $ ->
     node.call(force.drag)
 
 
-    container.call(tip)
+    # container.call(tip)
 
     force.alpha(0.2)

@@ -1,9 +1,12 @@
-<html ><head>
+<!DOCTYPE html>
+<html lang="en">
+<head>
 <meta http-equiv="content-type" content="text/html; charset=windows-1252">
 
 <script type="text/javascript" src="timelines.js"></script>
-<script src="d3.js" charset="utf-8" type="text/javascript"></script>
 <script src="jquery-2.1.4.min.js" charset="utf-8" type="text/javascript"></script>
+<script src="bootstrap/js/bootstrap.min.js" charset="utf-8" type="text/javascript"></script>
+<script src="d3.js" charset="utf-8" type="text/javascript"></script>
 <script src="d3.tip.v0.6.3.js" charset="utf-8" type="text/javascript"></script>
 <!--
 <script type="text/javascript" src="buildBackLinks.js"></script>
@@ -15,6 +18,8 @@
 <script type="text/javascript" src="compiledCoffeeScript/createDataStructure.js"></script>
 <script type="text/javascript" src="compiledCoffeeScript/main.js"></script>
 
+
+<link href="bootstrap/css/bootstrap-slate.css" rel="stylesheet" type="text/css">
 <link href="style.css" rel="stylesheet" type="text/css">
 
 </head>
@@ -23,410 +28,63 @@
 <body>
 
 
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-9">
+            <div id="graph-container">
+            </div>
+        </div>
+        <divb class="col-sm-3" id="sidebar">
+            <ul id="myTab" class="nav nav-tabs">
+              <li class="active"><a href="#home" data-toggle="tab">Home</a></li>
+              <li class=""><a href="#filtering" data-toggle="tab">Profile</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li class=""><a href="#dropdown1" data-toggle="tab">@fat</a></li>
+                  <li class=""><a href="#dropdown2" data-toggle="tab">@mdo</a></li>
+                </ul>
+              </li>
+            </ul>
 
-<div id="graph-container">
+            <div id="sidbar-content" class="tab-content well">
+              <div class="tab-pane fade active in" id="home">
+                <p>Hello! This is a visualization of the timelines in
+                    <a href="http://mspaintadventures.com/?s=6">Homestuck</a>.
+                    As there are a lot of time shenanigans in this story, timelines are tracked per-character.
+                    Overall, time will roughly flow from left to right but the visualization adjusts to better display the shananigans.
+                </p>
+                Things you can do:
+                <ul>
+                    <li>click nodes for more info
+                    <li>drag nodes</li>
+                    <li>pan</li>
+                    <li>scroll to zoom in and out</li>
+                </ul>
+                <p>
+                </p>
+              </div>
+              <div class="tab-pane fade" id="filtering">
+                <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic.</p>
+              </div>
+              <div class="tab-pane fade" id="dropdown1">
+                <p>Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard locavore </p>
+              </div>
+              <div class="tab-pane fade" id="dropdown2">
+                <p>Trust fund seitan letterpress, keytar raw denim keffiyeh etsy art party before they sold out master cleanse gluten-free squid scenester freegan cosby sweater. Fanny pack portland seitan DIY, art party locavore wolf cliche </p>
+              </div>
+            </div>
+        </div>
+    </div>
 </div>
+
 <script type="text/javascript">
-/*
-colours[0] = '#2d65cd'  // make John's colour more visible
 
-buildBacklinks(timelines)
-processTimelines(
-
-if (timelines === null) {
-    throw new Error("timelines are null")
-}
-
-// First, we specify the size of the canvas containing
-// the visualization (size of the <div> element).
-
-var width  = 800
-var height = 600
-var width  = window.innerWidth  - 30
-var height = window.innerHeight - 50
-
-
-
-
-function zoomed() {
-    stopTipTracking()
-    d3.event.translate[0] += 0.5 * d3.event.scale * width
-    d3.event.translate[1] += 0.5 * d3.event.scale * height
-
-    container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
-}
-
-var zoom = d3.behavior.zoom()
-    .scaleExtent([0.2, 2])
-    .on("zoom", zoomed);
-
-
-// In the <div> element, we create a <svg> graphic
-// that will contain our interactive visualization.
-var svg = d3
-    .select("#graph-container")
-    .append("svg")
-        .attr("width", width)
-        .attr("height", height)
-    .append("g")
-        .call(zoom);
-
-
-var rect = svg.append("rect")
-    .attr("width", width)
-    .attr("height", height)
-    .style("fill", "none")
-    .style("pointer-events", "all");
-
-var container = svg.append("g")
-n    .attr("transform", "translate(" + [width*0.5, height*0.5] + ")")
-    // .append('g')
-
-
-var panelID2nodeID = {}
-var nodeID2panelID = {}
-var nodes = []
-var idCounter = 0
-
-console.log(width)
-
-//  create nodes
-panelIDs.forEach(function(panelID) {
-    nodeID = idCounter
-    idCounter += 1
-
-    panelID2nodeID[panelID] = nodeID
-    nodeID2panelID[nodeID] = panelID
-
-    newNode = {
-        id: nodeID,
-        panelID: panelID,
-        x: -0.5*width + width * parseFloat(panelID - panelStart) / (panelEnd - panelStart)
-    }
-    nodes.push(newNode);
-})
-
-// get the -1.0 .. 1.0 offset for a link end
-function getOffset(index, listLength) {
-    if (listLength > 1) {
-        return (index / (listLength-1.0)) - 0.5
-    }
-    else {
-        return 0.0;
-    }
-}
-
-// create link data
-var links = []
-panelIDs.forEach(function(panelID) {
-
-    characters = timelines[panelID]
-    numCharacters_source = characters.length
-    var sourceCharacter = 0
-    characters.forEach(function (character) {
-
-        var colour = colours[character[1]]
-        character[4].forEach(function (link) {
-            targetPanelID = link[0]
-            if (!(targetPanelID in panelID2nodeID)) {
-                console.warn('target panel does not exist: ' + panelID)
-                return;
-            }
-
-            targetCharacter = link[1]
-            numCharacters_target = timelines[targetPanelID].length
-
-
-            newEdge = {
-                source: panelID2nodeID[panelID],
-                target: panelID2nodeID[link[0]],
-                colourID: character[1],
-                sourceCharacter: sourceCharacter,
-                targetCharacter: targetCharacter,
-                offset1: getOffset(sourceCharacter, numCharacters_source),
-                offset2: getOffset(targetCharacter, numCharacters_target),
-            };
-            links.push(newEdge);
-        })
-
-        // if (!isRequested(character)) {
-        //     console.warn('character should have been filtered: ' + panelID)
-        // }
-        sourceCharacter += 1
+    $('#myTab a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
     })
-
-})
-
-
-
-
-
-
-// We create a <line> SVG element for each link
-var link = container.selectAll(".link")
-    .data(links)
-    .enter()
-    .append("path")
-    .style("fill", "none")
-    .style('stroke', function (d) { return colours[d.colourID] })
-
-
-// We create a <circle> SVG element for each node
-// in the graph, and we specify a few attributes.
-var node = container.selectAll(".node")
-    .data(nodes)
-    .enter().append("circle")
-    .attr("class", function (d) {
-        var cls = "node"
-        var basePanelID = d.panelID.split('[')[0]
-        if (panelsToSplit == basePanelID) {
-            cls += " split"
-        }
-        return cls
-    })
-    // .style("fill", function (d) {
-    //     return '#FFF000'
-    // })
-
-    .attr("r", function(d) {
-        var radius = 10
-        intoductionPanelIDs.forEach(function (panelID) {
-            if (containedPanelIDs[d.panelID].indexOf(panelID + '') >= 0) {
-                radius = 25
-                console.log('FOUND '  + panelID)
-            }
-        })
-        return radius;
-    })  // radius
-    // .on("click", function(d){
-    //     console.log(d.panelID+': ' + JSON.stringify(timelines[d.panelID]))
-    // });
-
-
-
-function lerp(a, b, t) {
-    return (1.0-t)*a + t*b
-}
-
-// We create a force-directed dynamic graph layout.
-var force = d3.layout.force()
-    .gravity(0)
-    .charge(-100)
-    .linkDistance(50)
-    // .size([width, height])
-    .nodes(nodes)
-    .links(links)
-    .start()
-    .on("tick", function() {
-        link.attr("d", function (d) {
-            var x1 = d.source.x,
-                y1 = d.source.y,
-                x2 = d.target.x,
-                y2 = d.target.y,
-                dx = x2 - x1,
-                dy = y2 - y1,
-
-            arrowLength = 10.0
-            arrowWidth = 1.5
-            linkBandWidth = 15.0
-
-            x_source = x1
-            y_source = y1
-            x_target = x2
-            y_target = y2
-
-            vx = x_target - x_source
-            vy = y_target - y_source
-            lenV = Math.sqrt(vx*vx + vy*vy)
-            vx /= lenV
-            vy /= lenV
-
-            x_target -= 10 * vx
-            y_target -= 10 * vy
-
-
-            // tangent
-            tx = -vy
-            ty =  vx
-
-            x_source += linkBandWidth * d.offset1 * tx
-            y_source += linkBandWidth * d.offset1 * ty
-            x_target += linkBandWidth * d.offset2 * tx
-            y_target += linkBandWidth * d.offset2 * ty
-
-            vx = x_target - x_source
-            vy = y_target - y_source
-            lenV = Math.sqrt(vx*vx + vy*vy)
-            vx /= lenV
-            vy /= lenV
-            tx = -vy
-            ty =  vx
-
-
-            // tx = -dy
-            // ty =  dx
-            // lenTangent = Math.sqrt(tx*tx + ty*ty)
-            // tx /= lenTangent
-            // ty /= lenTangent
-
-
-            // x_target = lerp(x_source, x_target, 0.9)
-            // y_target = lerp(y_source, y_target, 0.9)
-
-
-            return (
-                'M' +
-                    x_source + ',' +
-                    y_source
-                + 'L' +
-                    x_target + ',' +
-                    y_target
-                + 'L' +
-                    (x_target - arrowLength*vx + arrowWidth*tx) + ',' +
-                    (y_target - arrowLength*vy + arrowWidth*ty)
-                + 'L' +
-                    (x_target - arrowLength*vx - arrowWidth*tx) + ',' +
-                    (y_target - arrowLength*vy - arrowWidth*ty)
-                + 'L' +
-                    x_target + ',' +
-                    y_target
-            )
-        })
-
-        node.attr("transform", function (d) {
-            // targetPos = parseFloat(d.panelID - panelStart) / (panelEnd - panelStart)
-            // targetPos *= width
-            // change = targetPos - d.x
-            // change = change*2.0 - 1.0
-            // change *= 0.001
-            // d.x += change
-            return "translate(" +
-                d.x + "," +
-                d.y +
-            ")"
-        })
-
-        // if (selectedNode != null) {
-        //     // console.log(selectedNode)
-        //     tip.show(selectedNode)
-        // }
-    })
-
-
-
-
-
-
-
-
-
-
-
-
-
-// adds "The {0} grail".format('holy')
-if (!String.prototype.format) {
-  String.prototype.format = function() {
-    var args = arguments;
-    return this.replace(/{(\d+)}/g, function(match, number) {
-      return typeof args[number] != 'undefined'
-        ? args[number]
-        : match
-      ;
-    });
-  };
-}
-
-function pad(n, width, padChar) {
-    padChar = padChar || '0';
-    n = n + '';
-    return n.length >= width ? n : new Array(width - n.length + 1).join(padChar) + n;
-}
-
-function makeURLfromPanelID(panelID) {
-    return "http://mspaintadventures.com/?s=6&p=" + pad(panelID, 6)
-}
-var tip = d3.tip()
-    .attr('class', 'd3-tip')
-    .offset([-10, 0])
-    .html(function(d) {
-        if (!d) {
-            return 'shits gone wrong'
-        }
-
-        html = ''
-
-        containedPanelIDs[d.panelID].forEach(function (panelID) {
-            html = html + '<a href="{0}" target="_blank">{1}</a> &nbsp; '.format(
-                makeURLfromPanelID(panelID),
-                panelID
-            )
-        })
-        return html
-    })
-    .hide()
-
-
-var selectedNode = null;
-function startTipTracking(d) {
-    selectedNode = d
-    tip.manualTarget = d3.event.target
-    tip.show(d)
-    // force.stop();
-
-    if (!(d.fixed & 1)) {
-        stopTipTracking()
-    }
-}
-
-function stopTipTracking(d) {
-    tip.hide(d)
-    selectedNode = null
-    tip.manualTarget = null
-    // force.resume();
-}
-
-
-node.on("click", startTipTracking)
-
-
-
-
-
-function length(x, y) {
-    return Math.sqrt(x*x + y*y)
-}
-
-force.drag()
-    .on("dragstart", function (d) {
-        d3.event.sourceEvent.stopPropagation();
-        stopTipTracking()
-        d.dragstart_x = d.x
-        d.dragstart_y = d.y
-        d.startedFixed = (d.fixed & 1)? true : false;
-        d3.select(this).classed("fixed", d.fixed = true)
-    })
-    .on("dragend", function (d) {
-        dragDistance = length(
-            d.dragstart_x - d.x,
-            d.dragstart_y - d.y
-        )
-
-        fixed = dragDistance > 10 || !d.startedFixed
-
-        d3.select(this).classed("fixed", d.fixed = fixed)
-
-        if (!fixed) {
-            stopTipTracking()
-        }
-    })
-
-node.call(force.drag)
-
-
-container.call(tip)
-
-force.alpha(0.5)
-*/
 </script>
+
+
 </body></html>

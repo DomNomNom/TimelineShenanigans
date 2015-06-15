@@ -212,9 +212,8 @@ window.createD3data = (graph, bodyIsInteresting) ->
         contractionID = subNodes[0].id
         panelID = subNodes[0].moment.panelID
         contraction = {
-            # width is a global variable
             x: 10000.0 * (panelID / 10000.0 - 0.5)
-            y: (panelID % 400) - 200
+            y: (panelID % 100) - 50
             id: contractionID
             subNodes: subNodes
         }
