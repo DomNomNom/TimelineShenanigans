@@ -1,44 +1,25 @@
-
-
-
-resize = () ->
-    # TODO: make resizing better
-    $('#sidebar').height(window.innerHeight)
-
-window.onresize = resize
+interestingCharacters = {
+    John: true,
+    Rose: true,
+    Dave: true,
+    Jade: true,
+}
 
 
 
 
-$ ->
-    resize()
-    colours[0] = '#2d65cd'  # make John's colour more visible
-
+recreateVisualization = () ->
     graphContainer = $("#graph-container")
-    #window.width  = window.innerWidth  - 30
-    #window.height = window.innerHeight - 50
     width  = graphContainer.width()
     height = window.innerHeight - 10
 
 
-
-    graph = new Graph(timelines)
-
     filterFunction = (body) ->
-        'Kids' in body.description.groups
+        interestingCharacters[body.key_description] is true
+        # 'Kids' in body.description.groups
 
     d3data = createD3data(graph, filterFunction)
-
-
-
-    # graph.deletePointers()
-    # log JSON.stringify(graph, null, 4)
-    # log 'stringify 1'
-    # # txt = JSON.stringify(graph, null, 4)
-    # txt = JSON.stringify(graph.descriptions, null, 4)
-    # log 'stringify 2'
-    # window.d3.select('#debugtext').html(txt)
-    # log 'stringify 3'
+    console.log 'filter', interestingCharacters
 
 
 
@@ -55,7 +36,7 @@ $ ->
         .on("zoom", zoomed)
 
 
-    svg = d3.select("#graph-container")
+    svg = d3.select("#graph-container").html("")
         .append("svg")
             .attr("width", width)
             .attr("height", height)
@@ -262,3 +243,46 @@ $ ->
 
 
     force.alpha(0.2)
+
+
+
+
+
+
+
+resize = () ->
+    # TODO: make resizing better
+    $('#sidebar').height(window.innerHeight)
+    recreateVisualization()
+
+window.onresize = resize
+
+
+
+
+$ ->
+    colours[0] = '#2d65cd'  # make John's colour more visible
+
+    timeout_recreate = null
+    $('#filter-checkboxes input').change(() ->
+        interestingCharacters[$(this).attr('char')] = $(this).is(":checked")
+
+        clearTimeout timeout_recreate
+        timeout_recreate = setTimeout(recreateVisualization, 10)
+
+        return true
+    )
+
+    window.graph = new Graph(timelines)
+    # graph.deletePointers()
+    # log JSON.stringify(graph, null, 4)
+    # log 'stringify 1'
+    # # txt = JSON.stringify(graph, null, 4)
+    # txt = JSON.stringify(graph.descriptions, null, 4)
+    # log 'stringify 2'
+    # window.d3.select('#debugtext').html(txt)
+    # log 'stringify 3'
+
+    resize()
+
+

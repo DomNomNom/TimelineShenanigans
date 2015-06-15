@@ -6,6 +6,10 @@
 <script type="text/javascript" src="timelines.js"></script>
 <script src="jquery-2.1.4.min.js" charset="utf-8" type="text/javascript"></script>
 <script src="bootstrap/js/bootstrap.min.js" charset="utf-8" type="text/javascript"></script>
+<script src="jquery-ui/jquery-ui.min.js" charset="utf-8" type="text/javascript"></script>
+<script src="jquery-tree/jquery.tree.min.js" charset="utf-8" type="text/javascript"></script>
+
+
 <script src="d3.js" charset="utf-8" type="text/javascript"></script>
 <!--
 <script type="text/javascript" src="buildBackLinks.js"></script>
@@ -17,7 +21,8 @@
 <script type="text/javascript" src="compiledCoffeeScript/createDataStructure.js"></script>
 <script type="text/javascript" src="compiledCoffeeScript/main.js"></script>
 
-
+<link href="jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css">
+<link href="jquery-tree/jquery.tree.min.css" rel="stylesheet" type="text/css">
 <link href="bootstrap/css/bootstrap-slate.css" rel="stylesheet" type="text/css">
 <link href="style.css" rel="stylesheet" type="text/css">
 
@@ -52,7 +57,7 @@
       <div id="sidbar-content" class="tab-content well">
         <div class="tab-pane fade" id="tabcontent-info">
           <div id="info-no-node">
-            <p>Click on a node to find out more</p>
+            <p>Click on a node to find out more about that moment.</p>
           </div>
           <div id="info-node" class="hidden">
             <h4>Panels:</h4>
@@ -65,17 +70,76 @@
 
           </div>
         </div>
-        <div class="tab-pane fade" id="tabcontent-filtering">
-          <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic.</p>
-        </div>
+
+
+
+
+
+          <div class="tab-pane fade" id="tabcontent-filtering">
+            <div id="filter-checkboxes">
+              <ul>
+                <li><input type="checkbox" checked><span>Kids</span>
+                  <ul>
+                    <li><input type="checkbox" checked><span>Beta Kids</span>
+                      <ul>
+                        <li><input type="checkbox" checked char="John"><span>John Egbert</span>
+                        <li><input type="checkbox" checked char="Rose"><span>Rose Lalonde</span>
+                        <li><input type="checkbox" checked char="Dave"><span>Dave Strider</span>
+                        <li><input type="checkbox" checked char="Jade"><span>Jade Harley</span>
+                        <!--
+                          <ul>
+                            <li><input type="checkbox"><span>Doomed Dave</span>
+                            <li><input type="checkbox"><span>Doomed Dave</span>
+                          </ul>
+                        -->
+                      </ul>
+                  </ul>
+                  <ul>
+                    <li><input type="checkbox"><span>Alpha Kids</span>
+                      <ul>
+                        <li><input type="checkbox"><span>Jane Crocker</span>
+                        <li><input type="checkbox"><span>Roxy Lalonde</span>
+                        <li><input type="checkbox"><span>Dirk Strider</span>
+                        <li><input type="checkbox"><span>Jake English</span>
+                      </ul>
+                  </ul>
+
+                <!--
+                <li><input type="checkbox"><span>Node 2</span>
+                    <ul>
+                        <li><input type="checkbox"><span>Node 2.1</span>
+                            <ul>
+                                <li><input type="checkbox"><span>Node 2.1.1</span>
+                            </ul>
+                        <li><input type="checkbox"><span>Node 2.2</span>
+                            <ul>
+                                <li><input type="checkbox"><span>Node 2.2.1</span>
+                                <li><input type="checkbox"><span>Node 2.2.2</span>
+                                <li><input type="checkbox"><span>Node 2.2.3</span>
+                                    <ul>
+                                        <li><input type="checkbox"><span>Node 2.2.3.1</span>
+                                        <li><input type="checkbox"><span>Node 2.2.3.2</span>
+                                    </ul>
+                                <li><input type="checkbox"><span>Node 2.2.4</span>
+                                <li><input type="checkbox"><span>Node 2.2.5</span>
+                                <li><input type="checkbox"><span>Node 2.2.6</span>
+                            </ul>
+                    </ul>
+                  -->
+              </ul>
+            </div>
+          </div>
+
+
+
         <div class="tab-pane fade" id="tabcontent-editing">
           <p>Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck </p>
         </div>
         <div class="tab-pane fade active in" id="tabcontent-home">
-          <p>Hello! This is a visualization of timelines in
+          <p>Hello! This is an interactive visualization of timelines in
             <a href="http://mspaintadventures.com/?s=6">Homestuck</a>.
             As there are a lot of time shenanigans in this story, timelines are tracked per-character.
-            Overall, time will roughly flow from left to right but the visualization adjusts to better display the shananigans.
+            Overall, time will flow from left to right but the visualization adjusts to better display the shananigans.
           </p>
           Things you can do:
           <ul>
@@ -106,6 +170,12 @@
         e.preventDefault();
         $(this).tab('show');
     })
+
+    window.a = $('#tabcontent-filtering div')
+    $('#tabcontent-filtering div').tree({
+      dnd: false,
+      selectable: false,
+    });
 </script>
 
 
