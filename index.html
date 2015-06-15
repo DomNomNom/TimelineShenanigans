@@ -7,7 +7,6 @@
 <script src="jquery-2.1.4.min.js" charset="utf-8" type="text/javascript"></script>
 <script src="bootstrap/js/bootstrap.min.js" charset="utf-8" type="text/javascript"></script>
 <script src="d3.js" charset="utf-8" type="text/javascript"></script>
-<script src="d3.tip.v0.6.3.js" charset="utf-8" type="text/javascript"></script>
 <!--
 <script type="text/javascript" src="buildBackLinks.js"></script>
 <script type="text/javascript" src="processTimelines.js"></script>
@@ -29,58 +28,81 @@
 
 
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-9">
-            <div id="graph-container">
-            </div>
-        </div>
-        <divb class="col-sm-3" id="sidebar">
-            <ul id="myTab" class="nav nav-tabs">
-              <li class="active"><a href="#home" data-toggle="tab">Home</a></li>
-              <li class=""><a href="#filtering" data-toggle="tab">Profile</a></li>
-              <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li class=""><a href="#dropdown1" data-toggle="tab">@fat</a></li>
-                  <li class=""><a href="#dropdown2" data-toggle="tab">@mdo</a></li>
-                </ul>
-              </li>
-            </ul>
-
-            <div id="sidbar-content" class="tab-content well">
-              <div class="tab-pane fade active in" id="home">
-                <p>Hello! This is a visualization of the timelines in
-                    <a href="http://mspaintadventures.com/?s=6">Homestuck</a>.
-                    As there are a lot of time shenanigans in this story, timelines are tracked per-character.
-                    Overall, time will roughly flow from left to right but the visualization adjusts to better display the shananigans.
-                </p>
-                Things you can do:
-                <ul>
-                    <li>click nodes for more info
-                    <li>drag nodes</li>
-                    <li>pan</li>
-                    <li>scroll to zoom in and out</li>
-                </ul>
-                <p>
-                </p>
-              </div>
-              <div class="tab-pane fade" id="filtering">
-                <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic.</p>
-              </div>
-              <div class="tab-pane fade" id="dropdown1">
-                <p>Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard locavore </p>
-              </div>
-              <div class="tab-pane fade" id="dropdown2">
-                <p>Trust fund seitan letterpress, keytar raw denim keffiyeh etsy art party before they sold out master cleanse gluten-free squid scenester freegan cosby sweater. Fanny pack portland seitan DIY, art party locavore wolf cliche </p>
-              </div>
-            </div>
+  <div class="row">
+    <div class="col-sm-9">
+        <div id="graph-container">
         </div>
     </div>
+    <divb class="col-sm-3" id="sidebar">
+      <ul id="sidebarTabs" class="nav nav-tabs">
+
+        <li class="">      <a href="#tabcontent-info" data-toggle="tab" id="tab-info">Info</a></li>
+        <li class="">      <a href="#tabcontent-filtering" data-toggle="tab">Filter</a></li>
+        <li class="">      <a href="#tabcontent-editing" data-toggle="tab">Edit</a></li>
+        <li class="active"><a href="#tabcontent-home" data-toggle="tab">About</a></li>
+        <!-- <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li class=""><a href="#dropdown1" data-toggle="tab">@fat</a></li>
+            <li class=""><a href="#dropdown2" data-toggle="tab">@mdo</a></li>
+          </ul>
+        </li> -->
+      </ul>
+
+      <div id="sidbar-content" class="tab-content well">
+        <div class="tab-pane fade" id="tabcontent-info">
+          <div id="info-no-node">
+            <p>Click on a node to find out more</p>
+          </div>
+          <div id="info-node" class="hidden">
+            <h4>Panels:</h4>
+            <p id='info-panels'>List panels here</p>
+
+            <hr>
+
+            <h4>Characters:</h4>
+            <p id='info-bodies'>Character info here</p>
+
+          </div>
+        </div>
+        <div class="tab-pane fade" id="tabcontent-filtering">
+          <p>Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic.</p>
+        </div>
+        <div class="tab-pane fade" id="tabcontent-editing">
+          <p>Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck </p>
+        </div>
+        <div class="tab-pane fade active in" id="tabcontent-home">
+          <p>Hello! This is a visualization of timelines in
+            <a href="http://mspaintadventures.com/?s=6">Homestuck</a>.
+            As there are a lot of time shenanigans in this story, timelines are tracked per-character.
+            Overall, time will roughly flow from left to right but the visualization adjusts to better display the shananigans.
+          </p>
+          Things you can do:
+          <ul>
+            <li>click nodes for more info
+            <li>drag nodes</li>
+            <li>pan</li>
+            <li>scroll to zoom in and out</li>
+          </ul>
+          <p>
+          </p>
+        </div>
+        <!--
+        <div class="tab-pane fade" id="dropdown1">
+          <p>Etsy mixtape wayfarers, ethical wes anderson tofu before they sold out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table readymade. Messenger bag gentrify pitchfork tattooed craft beer, iphone skateboard locavore </p>
+        </div>
+        <div class="tab-pane fade" id="dropdown2">
+          <p>Trust fund seitan letterpress, keytar raw denim keffiyeh etsy art party before they sold out master cleanse gluten-free squid scenester freegan cosby sweater. Fanny pack portland seitan DIY, art party locavore wolf cliche </p>
+        </div>
+        -->
+      </div>
+    </div>
+  </div>
 </div>
 
 <script type="text/javascript">
 
-    $('#myTab a').click(function (e) {
+    $('#sidebarTabs a').click(function (e) {
         e.preventDefault();
         $(this).tab('show');
     })

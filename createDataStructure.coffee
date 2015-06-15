@@ -28,10 +28,12 @@ data (JSON)
 
         moments: {
             1901: {
+                panelID: 1901
                 contractible: true
                 split: false
             }
             1902: {
+                panelID: 1902
                 contractible: true
                 split: false
             }

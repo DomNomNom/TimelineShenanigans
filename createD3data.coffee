@@ -6,24 +6,48 @@
 # if contracted, one d3node has many moments
 
 ###
-d3node = {
-    x: -100.3
-    y: 15.3
-    isIntroduction: false
-    isTerminal: false
-    # isSplit: true # this implies that there is exactly one body
-    bodies:  [ linkToBody ]
-    moments: [ linkToMoment, linkToMoment ]
+d3data = {
+    nodes: [
+        {
+            x: -100.3
+            y: 15.3
+            isIntroduction: false
+            isTerminal: false
+            # isSplit: true # this implies that there is exactly one body
+            bodies:  [ linkToBody ]
+            moments: [ linkToMoment, linkToMoment ]
+            id: contractionID
+            subNodes: [
+                {
+                    bodies: [ body, body ]
+                    moment: {
+                        panelID: 1902
+                        contractible: true
+                        split: false
+                    }
+                }
+                {
+                    bodies: [ body ]
+                    moment: body.moment
+                }
+            ]
+        }
+        ...
+    ]
+
+    links: [
+        {
+            prev: node_prev
+            next: node_next
+            colour: '#0715CD',
+            offset_prev: -1.0,
+            offset_next:  0.0,
+        }
+        ...
+    ]
 }
 
 
-d3link = {
-    prev: d3node_prev
-    next: d3node_next
-    colour: '#0715CD',
-    offset_prev: -1.0,
-    offset_next:  0.0,
-}
 
 ###
 

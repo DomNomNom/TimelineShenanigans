@@ -19,11 +19,19 @@ window.flatten = (lists) ->
 window.lerp = (a, b, t) ->
     (1.0 - t) * a   +   t * b
 
+
+window.length = (dx, dy) ->
+    Math.sqrt(dx*dx + dy*dy)
+
+
 # padds a string to be of a certian width
 window.pad = (n, width, padChar) ->
     padChar = padChar || '0'
     n = n + ''
-    return n.length >= width ? n : new Array(width - n.length + 1).join(padChar) + n
+    if n.length >= width
+        return n
+    else
+        return new Array(width - n.length + 1).join(padChar) + n
 
 
 # same as console.log but does it at most 100 times

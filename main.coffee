@@ -17,10 +17,8 @@ $ ->
     graphContainer = $("#graph-container")
     #window.width  = window.innerWidth  - 30
     #window.height = window.innerHeight - 50
-    console.log graphContainer
     width  = graphContainer.width()
     height = window.innerHeight - 10
-    console.log 'size: ' + [width, height]
 
 
 
@@ -45,28 +43,7 @@ $ ->
 
 
 
-
-
-
-    selectedNode = null
-    startTipTracking = (d) ->
-        # selectedNode = d
-        # tip.manualTarget = d3.event.target
-        # tip.show(d)
-        # # force.stop()
-
-        # if not (d.fixed & 1)
-        #     stopTipTracking()
-
-    stopTipTracking = (d) ->
-        # tip.hide(d)
-        # selectedNode = null
-        # tip.manualTarget = null
-        # # force.resume()
-
-
     zoomed = () ->
-        stopTipTracking()
         d3.event.translate[0] += 0.5 * d3.event.scale * width
         d3.event.translate[1] += 0.5 * d3.event.scale * height
 
@@ -198,24 +175,6 @@ $ ->
                 txt +=    "#{ y_target - arrowLength * vy - arrowWidth * ty }"
                 txt += "L#{ x_target },#{ y_target }"
                 return txt
-
-                return (
-                    'M' +
-                        x_source + ',' +
-                        y_source
-                    + 'L' +
-                        x_target + ',' +
-                        y_target
-                    + 'L' +
-                        (x_target - arrowLength * vx + arrowWidth * tx) + ',' +
-                        (y_target - arrowLength * vy + arrowWidth * ty)
-                    + 'L' +
-                        (x_target - arrowLength * vx - arrowWidth * tx) + ',' +
-                        (y_target - arrowLength * vy - arrowWidth * ty)
-                    + 'L' +
-                        x_target + ',' +
-                        y_target
-                )
             )
 
             node.attr("transform", (d) ->
@@ -227,56 +186,64 @@ $ ->
 
 
 
-
-    # tip = d3.tip()
-    #     .attr('class', 'd3-tip')
-    #     .offset([-10, 0])
-    #     .html((d) ->
-    #         if not d
-    #             return 'shits gone wrong'
-
-    #         html = 'blah blah'
-
-    #         # for panelID in containedPanelIDs[d.panelID]
-    #         #     html += """
-    #         #         <a
-    #         #          href="http:#mspaintadventures.com/?s=6&p=#{ pad(panelID, 6) }"
-    #         #          target="_blank"
-    #         #         >
-    #         #             #{ panelID }
-    #         #         </a>
-    #         #         &nbsp
-    #         #     """
-    #         #     # html += '<a href="{0}" target="_blank">{1}</a> &nbsp '.format(
-    #         #     #     "http:#mspaintadventures.com/?s=6&p=" + pad(panelID, 6),
-    #         #     #     panelID
-    #         #     # )
-    #         return html
-    #     )
-    #     .hide()
+    setInfoData = (node) ->
+        $('#tab-info').tab('show')
 
 
 
+        if node?
+            html_panel = ''
+            html_bodies = ''
+            console.log node
 
-    node.on("click", startTipTracking)
+            bodies = []
+            for subnode in node.subNodes
+                panelID = subnode.moment.panelID
+                html_panel += """
+                    <a
+                     href="http://mspaintadventures.com/?s=6&p=#{ pad(panelID, 6) }"
+                     target="_blank"
+                    >
+                        #{ panelID }
+                    </a>
+                    &nbsp
+                """
+                bodies = subnode.moment.bodies
+
+            for body in bodies
+                description = body.description
+                html_bodies += """
+                    <span style="color: #{ description.colour };">
+                        #{ description.name }
+                    </span>
+                    &nbsp
+                """
 
 
+            $('#info-panels').html(html_panel)
+            $('#info-bodies').html(html_bodies)
 
 
+            $('#info-node'   ).removeClass('hidden')
+            $('#info-no-node').addClass('hidden')
+        else
+            $('#info-node'   ).addClass('hidden')
+            $('#info-no-node').removeClass('hidden')
 
-    length = (x, y) ->
-        return Math.sqrt(x*x + y*y)
+
 
     force.drag()
         .on("dragstart", (d) ->
             d3.event.sourceEvent.stopPropagation()
-            stopTipTracking()
+            setInfoData(d)
+
             d.dragstart_x = d.x
             d.dragstart_y = d.y
             d.startedFixed = if d.fixed & 1 then true else false
             d3.select(this).classed("fixed", d.fixed = true)
         )
         .on("dragend", (d) ->
+
             dragDistance = length(
                 d.dragstart_x - d.x,
                 d.dragstart_y - d.y
@@ -284,15 +251,14 @@ $ ->
 
             fixed = dragDistance > 10 || !d.startedFixed
 
+            if not fixed
+                setInfoData(null)
+
             d3.select(this).classed("fixed", d.fixed = fixed)
 
-            if not fixed
-                stopTipTracking()
         )
 
     node.call(force.drag)
 
-
-    # container.call(tip)
 
     force.alpha(0.2)
