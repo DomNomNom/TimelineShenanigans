@@ -1,9 +1,9 @@
-interestingCharacters = {
-    John: true,
-    Rose: true,
-    Dave: true,
-    Jade: true,
-}
+interestingCharacters = {}
+#     John: true,
+#     Rose: true,
+#     Dave: true,
+#     Jade: true,
+# }
 
 
 
@@ -30,11 +30,11 @@ recreateVisualization = () ->
 
         container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")")
 
-
+    startingZoom = 0.3
     zoom = d3.behavior.zoom()
         .scaleExtent([0.2, 2])
+        .scale(startingZoom)
         .on("zoom", zoomed)
-
 
     svg = d3.select("#graph-container").html("")
         .append("svg")
@@ -50,7 +50,7 @@ recreateVisualization = () ->
         .style("pointer-events", "all")
 
     container = svg.append("g")
-        .attr("transform", "translate(" + [width*0.5, height*0.5] + ")")
+        .attr("transform", "translate(" + [width*0.5*startingZoom, height*0.5*startingZoom] + ")scale(" + startingZoom + ")")
 
 
 
@@ -263,25 +263,43 @@ window.onresize = resize
 $ ->
     colours[0] = '#2d65cd'  # make John's colour more visible
 
+    window.graph = new Graph(timelines)
+
+    # create the list of interesting characters
+    $('#filter-checkboxes input').each () ->
+        character = $(this).attr('char')
+        if character?
+            console.log 'char: ', character
+            interestingCharacters[character] = $(this).is(":checked")
+        return true
+
+    console.log interestingCharacters
+
+    # add checkboxes that weren't added manually
+    missedCheckboxes = {}
+    missedCheckboxes[key] = val for key, val of graph.descriptions
+    for key, val of interestingCharacters
+        delete missedCheckboxes[key]
+    html_otherCheckboxes = ''
+    for key, description of missedCheckboxes
+        html_otherCheckboxes += """
+            <li><input type="checkbox" char="#{ key }"><span>#{ description.name }</span>
+        """
+        console.log """<li><input type="checkbox" char="#{ key }"><span>#{ description.name }</span>"""
+    $('#filter-others').html html_otherCheckboxes
+
     timeout_recreate = null
     $('#filter-checkboxes input').change(() ->
-        interestingCharacters[$(this).attr('char')] = $(this).is(":checked")
+        character = $(this).attr('char')
+        if character?
+            interestingCharacters[character] = $(this).is(":checked")
 
+        # make sure we don't call recreateVisualization more than once for a sweeping change
         clearTimeout timeout_recreate
         timeout_recreate = setTimeout(recreateVisualization, 10)
 
         return true
     )
-
-    window.graph = new Graph(timelines)
-    # graph.deletePointers()
-    # log JSON.stringify(graph, null, 4)
-    # log 'stringify 1'
-    # # txt = JSON.stringify(graph, null, 4)
-    # txt = JSON.stringify(graph.descriptions, null, 4)
-    # log 'stringify 2'
-    # window.d3.select('#debugtext').html(txt)
-    # log 'stringify 3'
 
     resize()
 
