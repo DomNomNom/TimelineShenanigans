@@ -1,11 +1,8 @@
+
+
 interestingCharacters = {}
-#     John: true,
-#     Rose: true,
-#     Dave: true,
-#     Jade: true,
-# }
-
-
+svg = null
+force = null
 
 
 recreateVisualization = () ->
@@ -19,9 +16,12 @@ recreateVisualization = () ->
         # 'Kids' in body.description.groups
 
     d3data = createD3data(graph, filterFunction)
-    console.log 'filter', interestingCharacters
 
-
+    # remove old stuff
+    if force?
+        force.alpha(0.0)
+    if svg?
+        d3.select("svg").remove()
 
 
     zoomed = () ->
