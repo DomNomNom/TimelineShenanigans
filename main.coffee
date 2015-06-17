@@ -10,14 +10,13 @@ force = null
 dataContainer = null
 link = null
 node = null
+d3data = null
+previousNodePositions = {}
 
 recreateVisualization = () ->
     graphContainer = $("#graph-container")
     width  = graphContainer.width()
     height = window.innerHeight - 10
-
-
-
 
     # remove old stuff
     if force?
@@ -185,7 +184,6 @@ recreateVisualization = () ->
 
 
 
-    force.alpha(0.2)
     force.drag()
         .on("dragstart", (d) ->
             d3.event.sourceEvent.stopPropagation()
@@ -216,12 +214,18 @@ recreateVisualization = () ->
 
 recreateGraph = () ->
 
-    d3data = createD3data(graph, filterFunction)
+
+    if d3data?
+        for node in d3data.nodes
+            previousNodePositions[node.id] = [ node.x, node.y ]
+
+    d3data = createD3data(graph, filterFunction, previousNodePositions)
 
     force.stop()
     force.nodes(d3data.nodes)
     force.links(d3data.links)
     force.start()
+    force.alpha(0.2)
 
     dataContainer.selectAll("*").remove()
 

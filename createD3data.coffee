@@ -47,12 +47,10 @@ d3data = {
     ]
 }
 
-
-
 ###
 
 
-window.createD3data = (graph, bodyIsInteresting) ->
+window.createD3data = (graph, bodyIsInteresting, previousNodePositions) ->
     ###
     build the set of included bodies
     ###
@@ -235,9 +233,18 @@ window.createD3data = (graph, bodyIsInteresting) ->
 
         contractionID = subNodes[0].id
         panelID = subNodes[0].moment.panelID
+
+        position = [
+            10000.0 * (panelID / 10000.0 - 0.5)
+            (panelID % 100) - 50
+        ]
+        previousNodePositions
+        if contractionID of previousNodePositions
+            position = previousNodePositions[contractionID]
+
         contraction = {
-            x: 10000.0 * (panelID / 10000.0 - 0.5)
-            y: (panelID % 100) - 50
+            x: position[0]
+            y: position[1]
             id: contractionID
             subNodes: subNodes
         }
@@ -270,13 +277,13 @@ window.createD3data = (graph, bodyIsInteresting) ->
     and add the properties that d3 uses
     ###
     list_contrations = ( c for id, c of contractions )
-    for id in [0 .. list_contrations.length - 1]
-        list_contrations[id].id = id
+    for index in [0 .. list_contrations.length - 1]
+        list_contrations[index].index = index
 
 
     for link in contractedLinks
-        link.source = link.contracted_prev.id
-        link.target = link.contracted_next.id
+        link.source = link.contracted_prev.index
+        link.target = link.contracted_next.index
 
     return {
         nodes: list_contrations
