@@ -1,9 +1,15 @@
 
 
 interestingCharacters = {}
+filterFunction = (body) ->
+    interestingCharacters[body.key_description] is true
+    # 'Kids' in body.description.groups
+
 svg = null
 force = null
-
+dataContainer = null
+link = null
+node = null
 
 recreateVisualization = () ->
     graphContainer = $("#graph-container")
@@ -11,11 +17,7 @@ recreateVisualization = () ->
     height = window.innerHeight - 10
 
 
-    filterFunction = (body) ->
-        interestingCharacters[body.key_description] is true
-        # 'Kids' in body.description.groups
 
-    d3data = createD3data(graph, filterFunction)
 
     # remove old stuff
     if force?
@@ -28,7 +30,7 @@ recreateVisualization = () ->
         d3.event.translate[0] += 0.5 * d3.event.scale * width
         d3.event.translate[1] += 0.5 * d3.event.scale * height
 
-        container.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")")
+        dataContainer.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")")
 
     startingZoom = 0.3
     zoom = d3.behavior.zoom()
@@ -49,34 +51,9 @@ recreateVisualization = () ->
         .style("fill", "none")
         .style("pointer-events", "all")
 
-    container = svg.append("g")
+    dataContainer = svg.append("g")
         .attr("transform", "translate(" + [width*0.5*startingZoom, height*0.5*startingZoom] + ")scale(" + startingZoom + ")")
 
-
-
-    link = container.selectAll(".link")
-        .data(d3data.links)
-        .enter()
-        .append("path")
-        .style("fill", "none")
-        .style('stroke', (d) ->
-            d.colour
-            #colours[0]
-            #colours[d.colourID]
-        )
-
-    node = container.selectAll(".node")
-        .data(d3data.nodes)
-        .enter().append("circle")
-        .attr("class", (d) ->
-            "node"
-            # cls = "node"
-            # basePanelID = d.panelID.split('[')[0]
-            # if panelsToSplit == basePanelID
-            #     cls += " split"
-            # return cls
-        )
-        .attr("r", (d) -> 10 )  # radius
 
 
 
@@ -85,10 +62,7 @@ recreateVisualization = () ->
         .gravity(0)
         .charge(-100)
         .linkDistance(50)
-        .nodes(d3data.nodes)
         # .size([width, height])
-        .links(d3data.links)
-        .start()
         .on("tick", () ->
             link.attr("d", (d) ->
                 x1 = d.source.x
@@ -170,8 +144,6 @@ recreateVisualization = () ->
     setInfoData = (node) ->
         $('#tab-info').tab('show')
 
-
-
         if node?
             html_panel = ''
             html_bodies = ''
@@ -213,6 +185,7 @@ recreateVisualization = () ->
 
 
 
+    force.alpha(0.2)
     force.drag()
         .on("dragstart", (d) ->
             d3.event.sourceEvent.stopPropagation()
@@ -239,10 +212,37 @@ recreateVisualization = () ->
 
         )
 
-    node.call(force.drag)
+    recreateGraph()
 
+recreateGraph = () ->
 
-    force.alpha(0.2)
+    d3data = createD3data(graph, filterFunction)
+
+    force.stop()
+    force.nodes(d3data.nodes)
+    force.links(d3data.links)
+    force.start()
+
+    dataContainer.selectAll("*").remove()
+
+    link = dataContainer.selectAll(".link")
+        .data(d3data.links)
+        .enter()
+        .append("path")
+        .style("fill", "none")
+        .style('stroke', (d) ->
+            d.colour
+        )
+
+    node = dataContainer.selectAll(".node")
+        .data(d3data.nodes)
+        .enter()
+        .append("circle")
+        .attr("class", (d) ->
+            "node"
+        )
+        .attr("r", (d) -> 10 )  # radius
+        .call(force.drag)
 
 
 
@@ -269,7 +269,6 @@ $ ->
     $('#filter-checkboxes input').each () ->
         character = $(this).attr('char')
         if character?
-            console.log 'char: ', character
             interestingCharacters[character] = $(this).is(":checked")
         return true
 
@@ -294,9 +293,9 @@ $ ->
         if character?
             interestingCharacters[character] = $(this).is(":checked")
 
-        # make sure we don't call recreateVisualization more than once for a sweeping change
+        # make sure we don't call recreateGraph more than once for a sweeping change
         clearTimeout timeout_recreate
-        timeout_recreate = setTimeout(recreateVisualization, 10)
+        timeout_recreate = setTimeout(recreateGraph, 10)
 
         return true
     )
