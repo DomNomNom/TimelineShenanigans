@@ -11,7 +11,6 @@ dataContainer = null
 link = null
 node = null
 d3data = null
-previousNodePositions = {}
 
 recreateVisualization = () ->
     graphContainer = $("#graph-container")
@@ -214,12 +213,7 @@ recreateVisualization = () ->
 
 recreateGraph = () ->
 
-
-    if d3data?
-        for node in d3data.nodes
-            previousNodePositions[node.id] = [ node.x, node.y ]
-
-    d3data = createD3data(graph, filterFunction, previousNodePositions)
+    d3data = createD3data(graph, filterFunction, d3data)
 
     force.stop()
     force.nodes(d3data.nodes)
@@ -243,7 +237,10 @@ recreateGraph = () ->
         .enter()
         .append("circle")
         .attr("class", (d) ->
-            "node"
+            cls = "node"
+            if d.fixed
+                cls += " fixed"
+            return cls
         )
         .attr("r", (d) -> 10 )  # radius
         .call(force.drag)

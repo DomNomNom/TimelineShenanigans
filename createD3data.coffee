@@ -50,18 +50,9 @@ d3data = {
 ###
 
 
-window.createD3data = (graph, bodyIsInteresting, previousNodePositions) ->
+window.createD3data = (graph, bodyIsInteresting, previousData) ->
     ###
     build the set of included bodies
-    ###
-
-    # interestingBodies = {}
-    # for id, body of graph.bodies
-    #     if bodyIsInteresting body
-    #         interestingBodies[id] = body
-
-
-    ###
     join bodies into moments unless the moment is split
     ###
     d3nodes = {}
@@ -230,20 +221,19 @@ window.createD3data = (graph, bodyIsInteresting, previousNodePositions) ->
         contractionID = subNodes[0].id
         panelID = subNodes[0].moment.panelID
 
-        position = [
-            10000.0 * (panelID / 10000.0 - 0.5)
-            (panelID % 100) - 50
-        ]
-        previousNodePositions
-        if contractionID of previousNodePositions
-            position = previousNodePositions[contractionID]
 
         contraction = {
-            x: position[0]
-            y: position[1]
+            x: 10000.0 * (panelID / 10000.0 - 0.5)
+            y: (panelID % 100) - 50
             id: contractionID
             subNodes: subNodes
         }
+        if previousData? and contractionID of previousData._contractions
+            previous = previousData._contractions[contractionID]
+            contraction.x     = previous.x
+            contraction.y     = previous.y
+            contraction.fixed = previous.fixed
+
         contractions[contractionID] = contraction
         for d3node in subNodes
             delete d3nodeQueue[d3node.id]
@@ -284,5 +274,7 @@ window.createD3data = (graph, bodyIsInteresting, previousNodePositions) ->
     return {
         nodes: list_contrations
         links: contractedLinks
+
+        _contractions: contractions
     }
 
