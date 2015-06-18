@@ -55,17 +55,20 @@ window.createD3data = (graph, bodyIsInteresting, previousNodePositions) ->
     build the set of included bodies
     ###
 
-    interestingBodies = {}
-    for id, body of graph.bodies
-        if bodyIsInteresting body
-            interestingBodies[id] = body
+    # interestingBodies = {}
+    # for id, body of graph.bodies
+    #     if bodyIsInteresting body
+    #         interestingBodies[id] = body
 
 
     ###
     join bodies into moments unless the moment is split
     ###
     d3nodes = {}
-    for id, body of interestingBodies
+    for id, body of graph.bodies
+        if not bodyIsInteresting body
+            continue
+
         d3node = null
         if body.moment.split
             log 'TODO: test this !'
@@ -108,19 +111,6 @@ window.createD3data = (graph, bodyIsInteresting, previousNodePositions) ->
 
             if isInterestingMoment
                 assert "moment: #{ momentID }" of d3nodes
-    for id, body of interestingBodies
-        # each interesting body is contained in a d3 node
-        assert body in body.d3node.bodies
-
-    # build the set of interesing links
-    interestingLinks = []
-    for link in graph.links
-        if (
-            link.key_prev of interestingBodies and
-            link.key_next of interestingBodies
-        )
-            interestingLinks.push(link)
-
 
 
     getOffset = (index, listLength) ->
@@ -130,7 +120,13 @@ window.createD3data = (graph, bodyIsInteresting, previousNodePositions) ->
             return 0.0
 
     d3links = []
-    for link in interestingLinks
+    for link in graph.links
+        if not(
+            bodyIsInteresting(link.prev) and
+            bodyIsInteresting(link.next)
+        )
+            continue
+
         body_prev = link.prev
         body_next = link.next
 
