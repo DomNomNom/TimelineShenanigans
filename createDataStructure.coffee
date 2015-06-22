@@ -115,7 +115,6 @@ class Graph
                 oldkey = '' + oldbody.slice(0, 4)
                 nameCombos[oldbody[0]][oldkey] = true
 
-        # log 'duplicates: '
         for i, dict of nameCombos
             name = peoplenames[i]
             dictSize = 0
@@ -127,7 +126,6 @@ class Graph
                 for oldkey, _ of dict
                     oldkey2descriptionKey[oldkey] = name
             else if dictSize > 1
-                # log('   '  + name + ': ' + (str dict))
                 for oldkey, _ of dict
                     if oldkey not of oldkey2descriptionKey
                         warn "character should be manually renamed: " + oldkey

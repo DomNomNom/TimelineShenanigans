@@ -11,6 +11,69 @@ dataContainer = null
 link = null
 node = null
 d3data = null
+selectedNode = null
+
+
+onEdit = () ->
+    assert selectedNode?
+    momentToEdit = selectedNode.subNodes[0].moment
+    assert momentToEdit
+    momentToEdit.contractible = $('#edit-contractible').is(':checked')
+    momentToEdit.split        = $('#edit-split'       ).is(':checked')
+    onNodeSelect(null)
+    scheduleRecreateGraph()
+
+onNodeSelect = (node) ->
+    selectedNode = node
+
+    if node?
+        # console.log node
+
+        html_panel = ''
+        html_bodies = ''
+        bodies = []
+        for subnode in node.subNodes
+            panelID = subnode.moment.panelID
+            html_panel += """
+                <a
+                 href="http://mspaintadventures.com/?s=6&p=#{ pad(panelID, 6) }"
+                 target="_blank"
+                >
+                    #{ panelID }
+                </a>
+                &nbsp
+            """
+            bodies = subnode.moment.bodies
+
+        for body in bodies
+            description = body.description
+            html_bodies += """
+                <span style="color: #{ description.colour };">
+                    #{ description.name }
+                </span>
+                &nbsp
+            """
+
+        $('#info-panels').html(html_panel)
+        $('#info-bodies').html(html_bodies)
+
+
+        # editing
+        momentToEdit = selectedNode.subNodes[0].moment
+        assert momentToEdit
+        $('#edit-contractible').prop('checked', momentToEdit.contractible)
+        $('#edit-split'       ).prop('checked', momentToEdit.split)
+
+
+        # switch to the info tab if appropritate
+        selectedTab = $('#sidebarTabs .active a').attr('id')
+        if selectedTab != 'tab-editing'
+            $('#tab-info').tab('show')
+
+    showIfTrue(node?, '#info-node', '#info-no-node')
+    showIfTrue(node?, '#edit-controls', '#edit-noselection')
+
+
 
 recreateVisualization = () ->
     graphContainer = $("#graph-container")
@@ -139,54 +202,11 @@ recreateVisualization = () ->
 
 
 
-    setInfoData = (node) ->
-        $('#tab-info').tab('show')
-
-        if node?
-            html_panel = ''
-            html_bodies = ''
-            console.log node
-
-            bodies = []
-            for subnode in node.subNodes
-                panelID = subnode.moment.panelID
-                html_panel += """
-                    <a
-                     href="http://mspaintadventures.com/?s=6&p=#{ pad(panelID, 6) }"
-                     target="_blank"
-                    >
-                        #{ panelID }
-                    </a>
-                    &nbsp
-                """
-                bodies = subnode.moment.bodies
-
-            for body in bodies
-                description = body.description
-                html_bodies += """
-                    <span style="color: #{ description.colour };">
-                        #{ description.name }
-                    </span>
-                    &nbsp
-                """
-
-
-            $('#info-panels').html(html_panel)
-            $('#info-bodies').html(html_bodies)
-
-
-            $('#info-node'   ).removeClass('hidden')
-            $('#info-no-node').addClass('hidden')
-        else
-            $('#info-node'   ).addClass('hidden')
-            $('#info-no-node').removeClass('hidden')
-
-
 
     force.drag()
         .on("dragstart", (d) ->
             d3.event.sourceEvent.stopPropagation()
-            setInfoData(d)
+            onNodeSelect(d)
 
             d.dragstart_x = d.x
             d.dragstart_y = d.y
@@ -203,13 +223,20 @@ recreateVisualization = () ->
             fixed = dragDistance > 10 || !d.startedFixed
 
             if not fixed
-                setInfoData(null)
+                onNodeSelect(null)
 
             d3.select(this).classed("fixed", d.fixed = fixed)
 
         )
 
     recreateGraph()
+
+
+timeout_recreate = null
+scheduleRecreateGraph = () ->
+    clearTimeout timeout_recreate
+    timeout_recreate = setTimeout(recreateGraph, 10)
+
 
 recreateGraph = () ->
 
@@ -253,9 +280,9 @@ recreateGraph = () ->
 
 
 
-
 $ ->
     colours[0] = '#2d65cd'  # make John's colour more visible
+    # TODO: make caliborn (grey) more visible
 
     window.graph = new Graph(timelines)
 
@@ -265,8 +292,6 @@ $ ->
         if character?
             interestingCharacters[character] = $(this).is(":checked")
         return true
-
-    console.log interestingCharacters
 
     # add checkboxes that weren't added manually
     missedCheckboxes = {}
@@ -278,21 +303,24 @@ $ ->
         html_otherCheckboxes += """
             <li><input type="checkbox" char="#{ key }"><span>#{ description.name }</span>
         """
-        console.log """<li><input type="checkbox" char="#{ key }"><span>#{ description.name }</span>"""
+        # console.log """<li><input type="checkbox" char="#{ key }"><span>#{ description.name }</span>"""
     $('#filter-others').html html_otherCheckboxes
 
-    timeout_recreate = null
-    $('#filter-checkboxes input').change(() ->
+
+    ### events ###
+    $('#filter-checkboxes input[char]').change(() ->
         character = $(this).attr('char')
-        if character?
-            interestingCharacters[character] = $(this).is(":checked")
+        interestingCharacters[character] = $(this).is(":checked")
 
         # make sure we don't call recreateGraph more than once for a sweeping change
-        clearTimeout timeout_recreate
-        timeout_recreate = setTimeout(recreateGraph, 10)
+        scheduleRecreateGraph()
 
         return true
     )
+
+    $('#edit-contractible').change(onEdit)
+    $('#edit-split'       ).change(onEdit)
+
 
 
     window.onresize = resize

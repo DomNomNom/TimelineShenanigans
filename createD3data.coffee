@@ -8,14 +8,14 @@
 ###
 d3data = {
     nodes: [
-        {
+        { // contraction
             x: -100.3
             y: 15.3
             isIntroduction: false
             isTerminal: false
             # isSplit: true # this implies that there is exactly one body
+            # moments: [ linkToMoment, linkToMoment ]
             bodies:  [ linkToBody ]
-            moments: [ linkToMoment, linkToMoment ]
             id: contractionID
             subNodes: [
                 {
@@ -62,7 +62,6 @@ window.createD3data = (graph, bodyIsInteresting, previousData) ->
 
         d3node = null
         if body.moment.split
-            log 'TODO: test this !'
             d3node = {
                 bodies: [ body ]
                 moment: body.moment
@@ -137,20 +136,21 @@ window.createD3data = (graph, bodyIsInteresting, previousData) ->
         d3links.push(link)
 
 
-
     ###
     select nodes for contraction
     ###
+    numWasContractible = 0
     for id, d3node of d3nodes
         # true - no next links yet
         # (d3node)  - we have a (outwards) 1:1 relationship
         # false - can not contract
-        contractible = true
-        if d3node.dontContract
-            contractible = false
+        contractible = d3node.moment.contractible
+        if not contractible
+            numWasContractible += 1
         d3node.prev = contractible
         d3node.next = contractible
         d3node.id = id
+
 
     for d3link in d3links
         node_prev = d3link.node_prev
@@ -221,7 +221,6 @@ window.createD3data = (graph, bodyIsInteresting, previousData) ->
         contractionID = subNodes[0].id
         panelID = subNodes[0].moment.panelID
 
-
         contraction = {
             x: 10000.0 * (panelID / 10000.0 - 0.5)
             y: (panelID % 100) - 50
@@ -237,6 +236,9 @@ window.createD3data = (graph, bodyIsInteresting, previousData) ->
         contractions[contractionID] = contraction
         for d3node in subNodes
             delete d3nodeQueue[d3node.id]
+            if d3node.hasOwnProperty('contraction')
+                console.log 'shit'
+                console.log d3node
             assert not d3node.hasOwnProperty('contraction')
             d3node.contraction = contraction
 
@@ -270,6 +272,13 @@ window.createD3data = (graph, bodyIsInteresting, previousData) ->
     for link in contractedLinks
         link.source = link.contracted_prev.index
         link.target = link.contracted_next.index
+
+    # keep positional data for longer history
+    if previousData?
+        for id, contraction of previousData._contractions
+            if id not of contractions
+                contraction.fixed = false
+                contractions[id] = contraction
 
     return {
         nodes: list_contrations

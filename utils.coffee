@@ -40,3 +40,12 @@ window.print100 = (string) ->
     counter100 += 1
     if counter100 <= 100
         console.log string
+
+# shows one of the last two arguments mutually exclusively
+window.showIfTrue = (condition, showTrue, showFalse) ->
+    if condition
+        $(showTrue ).removeClass('hidden')
+        $(showFalse).addClass('hidden')
+    else
+        $(showTrue ).addClass('hidden')
+        $(showFalse).removeClass('hidden')

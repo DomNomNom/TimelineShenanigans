@@ -41,10 +41,10 @@
     <divb class="col-sm-3" id="sidebar">
       <ul id="sidebarTabs" class="nav nav-tabs">
 
-        <li class="">      <a href="#tabcontent-info" data-toggle="tab" id="tab-info">Info</a></li>
-        <li class="">      <a href="#tabcontent-filtering" data-toggle="tab">Filter</a></li>
-        <li class="">      <a href="#tabcontent-editing" data-toggle="tab">Edit</a></li>
-        <li class="active"><a href="#tabcontent-home" data-toggle="tab">About</a></li>
+        <li class="">      <a id="tab-info"      data-toggle="tab" href="#tabcontent-info"     > Info   </a></li>
+        <li class="">      <a id="tab-filtering" data-toggle="tab" href="#tabcontent-filtering"> Filter </a></li>
+        <li class="">      <a id="tab-editing"   data-toggle="tab" href="#tabcontent-editing"  > Edit   </a></li>
+        <li class="active"><a id="tab-home"      data-toggle="tab" href="#tabcontent-home"     > About  </a></li>
         <!-- <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -83,6 +83,7 @@
                     <li class="collapsed"><input type="checkbox" checked><span>Beta Kids</span>
                       <ul>
                         <li><input type="checkbox" checked char="John"><span>John Egbert</span>
+                        <!--
                         <li><input type="checkbox" checked char="(John)"><span>(John)</span>
                         <li><input type="checkbox" checked char="Doomed John"><span>Doomed John</span>
 
@@ -94,7 +95,7 @@
 
                         <li><input type="checkbox" checked char="Jade"><span>Jade Harley</span>
                         <li><input type="checkbox" checked char="Jade (Grimbark)"><span>Jade</span>
-                        <!--
+                         --><!--
                           <ul>
                             <li><input type="checkbox"><span>Doomed Dave</span>
                             <li><input type="checkbox"><span>Doomed Dave</span>
@@ -267,10 +268,22 @@
           </div>
 
 
-
+        <!-- edit -->
         <div class="tab-pane fade" id="tabcontent-editing">
-          <p>Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck Food truck </p>
+          <div id="edit-noselection">
+            <p>Select a moment to edit</p>
+          </div>
+          <div id="edit-controls" class="hidden">
+            <div>
+              <input type="checkbox" id="edit-contractible"><span>Contract with other moments</span>
+            </div>
+            <div>
+              <input type="checkbox" id="edit-split"><span>Split Moment into bodies</span>
+            </div>
+          </div>
         </div>
+
+        <!-- about -->
         <div class="tab-pane fade active in" id="tabcontent-home">
           <p>Hello! This is an interactive visualization of timelines in
             <a href="http://mspaintadventures.com/?s=6">Homestuck</a>.
