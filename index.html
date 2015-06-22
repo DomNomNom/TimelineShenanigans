@@ -3,23 +3,28 @@
 <head>
 <meta http-equiv="content-type" content="text/html; charset=windows-1252">
 
-<script type="text/javascript" src="timelines.js"></script>
-<script src="jquery-2.1.4.min.js" charset="utf-8" type="text/javascript"></script>
-<script src="bootstrap/js/bootstrap.min.js" charset="utf-8" type="text/javascript"></script>
-<script src="jquery-ui/jquery-ui.min.js" charset="utf-8" type="text/javascript"></script>
-<script src="jquery-tree/jquery.tree.min.js" charset="utf-8" type="text/javascript"></script>
+<!-- stuff that I didn't make -->
+<script type="text/javascript" charset="utf-8" src="timelines.js"></script>
+<script type="text/javascript" charset="utf-8" src="jquery-2.1.4.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="jquery-tree/jquery.tree.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="d3.js"></script>
 
 
-<script src="d3.js" charset="utf-8" type="text/javascript"></script>
 <!--
 <script type="text/javascript" src="buildBackLinks.js"></script>
 <script type="text/javascript" src="processTimelines.js"></script>
  -->
 
+<!-- compiled coffeescript (we have some code to handle the case when they don't exist) -->
 <script type="text/javascript" src="compiledCoffeeScript/utils.js"></script>
 <script type="text/javascript" src="compiledCoffeeScript/createD3data.js"></script>
 <script type="text/javascript" src="compiledCoffeeScript/createDataStructure.js"></script>
 <script type="text/javascript" src="compiledCoffeeScript/main.js"></script>
+
+
+
 
 <link href="jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css">
 <link href="jquery-tree/jquery.tree.min.css" rel="stylesheet" type="text/css">
@@ -325,6 +330,23 @@
       dnd: false,
       selectable: false,
     });
+
+
+    $(function() {
+      // If the the coffeescript was not compiled, compile it now.
+      if (typeof Graph === 'undefined') {
+        console.log('compiling coffeescript...')
+        $('body').append('<script type="text/coffeescript" src="utils.coffee" />')
+        $('body').append('<script type="text/coffeescript" src="createDataStructure.coffee" />')
+        $('body').append('<script type="text/coffeescript" src="createD3data.coffee" />')
+        $('body').append('<script type="text/coffeescript" src="main.coffee" />')
+        $('body').append('<script type="text/javascript" charset="utf-8" src="coffee-script.js" />')
+      }
+      else {
+        // console.log('using compiled coffeescript')
+      }
+
+    })
 </script>
 
 

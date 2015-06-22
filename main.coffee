@@ -277,6 +277,11 @@ recreateGraph = () ->
 
 
 
+resize = () ->
+    # TODO: make resizing better
+    $('#sidebar').height(window.innerHeight)
+    recreateVisualization()
+
 
 
 
@@ -325,10 +330,5 @@ $ ->
 
     window.onresize = resize
     resize()
-
-resize = () ->
-    # TODO: make resizing better
-    $('#sidebar').height(window.innerHeight)
-    recreateVisualization()
 
 
