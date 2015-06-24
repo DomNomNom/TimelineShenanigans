@@ -12,9 +12,14 @@
 .node.fixed {
     stroke: #fff;
 }
+
 .node.split {
     fill: #448;
 }
+
+/*.contract .node                {   fill: #11f; }*/
+.contract .node.uncontractible {   fill: #fa1; }
+
 
 .link {
     stroke: #999;

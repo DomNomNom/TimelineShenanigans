@@ -11,17 +11,24 @@ dataContainer = null
 link = null
 node = null
 d3data = null
-selectedNode = null
+# selectedNode = null
 
+editMode = 'info'
+editModes = {
+    'info':     '#tab-info'
+    'contract': '#tab-contract'
+    'split':    '#tab-split'
+}
 
-onEdit = () ->
-    assert selectedNode?
-    momentToEdit = selectedNode.subNodes[0].moment
-    assert momentToEdit
-    momentToEdit.contractible = $('#edit-contractible').is(':checked')
-    momentToEdit.split        = $('#edit-split'       ).is(':checked')
-    onNodeSelect(null)
-    scheduleRecreateGraph()
+# onEdit = () ->
+#     assert selectedNode?
+#     momentToEdit = selectedNode.subNodes[0].moment
+#     assert momentToEdit
+#     momentToEdit.contractible = $('#edit-contractible').is(':checked')
+#     for subnode in selectedNode.subNodes
+#         subnode.moment.split = $('#edit-split').is(':checked')
+#     onNodeSelect(null)
+#     scheduleRecreateGraph()
 
 onNodeSelect = (node) ->
     selectedNode = node
@@ -61,14 +68,13 @@ onNodeSelect = (node) ->
         # editing
         momentToEdit = selectedNode.subNodes[0].moment
         assert momentToEdit
-        $('#edit-contractible').prop('checked', momentToEdit.contractible)
-        $('#edit-split'       ).prop('checked', momentToEdit.split)
+        $('#info-contractible').html('' + momentToEdit.contractible)
+        $('#info-split'       ).html('' + momentToEdit.split)
 
 
-        # switch to the info tab if appropritate
-        selectedTab = $('#sidebarTabs .active a').attr('id')
-        if selectedTab != 'tab-editing'
-            $('#tab-info').tab('show')
+
+        # switch to the info tab
+        $(editModes['info']).tab('show')
 
     showIfTrue(node?, '#info-node', '#info-no-node')
     showIfTrue(node?, '#edit-controls', '#edit-noselection')
@@ -125,6 +131,11 @@ recreateVisualization = () ->
         .linkDistance(50)
         # .size([width, height])
         .on("tick", () ->
+
+            node.attr("transform", (d) ->
+                "translate(#{ d.x }, #{ d.y })"
+            )
+
             link.attr("d", (d) ->
                 x1 = d.source.x
                 y1 = d.source.y
@@ -193,27 +204,56 @@ recreateVisualization = () ->
                 return txt
             )
 
-            node.attr("transform", (d) ->
-                "translate(#{ d.x }, #{ d.y })"
-            )
 
         )
-
-
-
 
 
     force.drag()
         .on("dragstart", (d) ->
             d3.event.sourceEvent.stopPropagation()
-            onNodeSelect(d)
 
-            d.dragstart_x = d.x
-            d.dragstart_y = d.y
-            d.startedFixed = if d.fixed & 1 then true else false
-            d3.select(this).classed("fixed", d.fixed = true)
+            if editMode == 'info'
+                onNodeSelect(d)
+                d3.select(this).classed("fixed", d.fixed = true)
+
+                d.dragstart_x = d.x
+                d.dragstart_y = d.y
+                d.startedFixed = if d.fixed & 1 then true else false
+
+            else if editMode == 'contract'
+                onNodeSelect(null)
+                d3.select(this).classed("fixed", d.fixed = false)
+
+                # make the middle moment not contractible
+                momentIndex = d.subNodes.length // 2
+                momentToEdit = d.subNodes[momentIndex].moment
+
+
+                d3data._contractions[d.subNodes[momentIndex].id] = {
+                    x:     d.x
+                    y:     d.y
+                    fixed: d.fixed
+                }
+                if momentIndex + 1 < d.subNodes.length
+                    d3data._contractions[d.subNodes[momentIndex + 1].id] = {
+                        x:     d.x
+                        y:     d.y
+                        fixed: d.fixed
+                    }
+                momentToEdit.contractible = not momentToEdit.contractible
+                scheduleRecreateGraph()
+
+            else if editMode == 'split'
+                onNodeSelect(null)
+                d3.select(this).classed("fixed", d.fixed = false)
+
+                for subnode in d.subNodes
+                    subnode.moment.split = not subnode.moment.split
+                scheduleRecreateGraph()
         )
         .on("dragend", (d) ->
+            if editMode is not 'info'
+                return
 
             dragDistance = length(
                 d.dragstart_x - d.x,
@@ -267,6 +307,9 @@ recreateGraph = () ->
             cls = "node"
             if d.fixed
                 cls += " fixed"
+            if editMode == 'contract' and not d.subNodes[0].moment.contractible
+                cls += ' uncontractible'
+
             return cls
         )
         .attr("r", (d) -> 10 )  # radius
@@ -323,9 +366,17 @@ $ ->
         return true
     )
 
-    $('#edit-contractible').change(onEdit)
-    $('#edit-split'       ).change(onEdit)
+    $('#sidebarTabs a').click( (e) ->
+        e.preventDefault()
+        $(this).tab('show')
 
+        href = $(this).attr('href')
+        if href?
+             newEditMode = href.split('tabcontent-')[1]
+             if newEditMode of editModes
+                editMode = newEditMode
+                dataContainer.attr('class', editMode)
+    )
 
 
     window.onresize = resize
