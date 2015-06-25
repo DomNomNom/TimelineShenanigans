@@ -229,7 +229,6 @@ recreateVisualization = () ->
             else
                 console.warn('invalid editMode: ' + editMode)
 
-            console.log 'down: '  + d.fixed
             d3.select(this).classed("fixed", d.fixed)
         )
         .on("dragend", (d) ->
@@ -355,13 +354,13 @@ resize = () ->
 
 
 changeEditMode = (newEditMode) ->
+    assert newEditMode of editModes
+    $(editModes[editMode]).tab('show')
+
+
     editMode = newEditMode
     dataContainer.attr('class', editMode)
 
-    # d3.select('rect#no-drag').on('mousedown.drag', null);
-    # force.on('mousedown.drag', null)
-    # scheduleRecreateGraph()
-    # if editMode == 'info'
     recreateGraph()
 
 
@@ -418,6 +417,17 @@ $ ->
 
     )
 
+    $(document).keydown((e) ->
+        switch e.which
+
+            # 1 2 3
+            when 49 then changeEditMode 'info'
+            when 50 then changeEditMode 'contract'
+            when 51 then changeEditMode 'split'
+
+            when 32 # space
+                console.log 'spaaaaaaaaaace!'
+    )
 
     window.onresize = resize
     resize()
