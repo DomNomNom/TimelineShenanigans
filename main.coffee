@@ -80,6 +80,12 @@ onNodeSelect = (node) ->
     showIfTrue(node?, '#edit-controls', '#edit-noselection')
 
 
+copyPosition = (_contraction) ->
+    return {
+        x:      _contraction.x
+        y:      _contraction.y
+        fixed:  _contraction.fixed
+    }
 
 recreateVisualization = () ->
     graphContainer = $("#graph-container")
@@ -207,53 +213,32 @@ recreateVisualization = () ->
 
         )
 
-
     force.drag()
         .on("dragstart", (d) ->
             d3.event.sourceEvent.stopPropagation()
 
+
             if editMode == 'info'
                 onNodeSelect(d)
-                d3.select(this).classed("fixed", d.fixed = true)
+                d.fixed = true
 
                 d.dragstart_x = d.x
                 d.dragstart_y = d.y
                 d.startedFixed = if d.fixed & 1 then true else false
 
-            else if editMode == 'contract'
-                onNodeSelect(null)
-                d3.select(this).classed("fixed", d.fixed = false)
+            else
+                console.warn('invalid editMode: ' + editMode)
 
-                # make the middle moment not contractible
-                momentIndex = d.subNodes.length // 2
-                momentToEdit = d.subNodes[momentIndex].moment
-
-
-                d3data._contractions[d.subNodes[momentIndex].id] = {
-                    x:     d.x
-                    y:     d.y
-                    fixed: d.fixed
-                }
-                if momentIndex + 1 < d.subNodes.length
-                    d3data._contractions[d.subNodes[momentIndex + 1].id] = {
-                        x:     d.x
-                        y:     d.y
-                        fixed: d.fixed
-                    }
-                momentToEdit.contractible = not momentToEdit.contractible
-                scheduleRecreateGraph()
-
-            else if editMode == 'split'
-                onNodeSelect(null)
-                d3.select(this).classed("fixed", d.fixed = false)
-
-                for subnode in d.subNodes
-                    subnode.moment.split = not subnode.moment.split
-                scheduleRecreateGraph()
+            console.log 'down: '  + d.fixed
+            d3.select(this).classed("fixed", d.fixed)
         )
         .on("dragend", (d) ->
-            if editMode is not 'info'
-                return
+            # if editMode is not 'info'
+            #     console.log this
+            #     onNodeSelect(null)
+            #     d.fixed = false
+            #     d3.select(this).classed("fixed", d.fixed)
+            #     return
 
             dragDistance = length(
                 d.dragstart_x - d.x,
@@ -305,18 +290,60 @@ recreateGraph = () ->
         .append("circle")
         .attr("class", (d) ->
             cls = "node"
-            if d.fixed
-                cls += " fixed"
-            if editMode == 'contract' and not d.subNodes[0].moment.contractible
+            if d.fixed & 1
+                cls += ' fixed'
+            if not d.subNodes[0].moment.contractible
                 cls += ' uncontractible'
+            if any ( subNode.moment.split for subNode in d.subNodes )
+                cls += ' split'
 
             return cls
         )
         .attr("r", (d) -> 10 )  # radius
-        .call(force.drag)
+        # .call(force.drag)
 
 
+    # set up interaction for nodes
+    if editMode == 'info'
+        node.call(force.drag)
+    else if editMode == 'contract'
+        node.on('click', (d) ->
+            onNodeSelect(null)
+            d.fixed = false
 
+            # make the middle moment not contractible
+            momentIndex = d.subNodes.length // 2
+            momentToEdit = d.subNodes[momentIndex].moment
+
+            # initialize potential positions to where this node is
+            copyPos = copyPosition(d)
+            d3data._contractions[d.subNodes[momentIndex].id] = copyPos
+            if momentIndex + 1 < d.subNodes.length
+                d3data._contractions[d.subNodes[momentIndex + 1].id] = copyPos
+            momentToEdit.contractible = not momentToEdit.contractible
+            scheduleRecreateGraph()
+        )
+    else if editMode == 'split'
+        node.on('click', (d) ->
+            onNodeSelect(null)
+            d.fixed = false
+
+            shouldSplit = not any ( subNode.moment.split for subNode in d.subNodes )
+            for subnode in d.subNodes
+                subnode.moment.split = shouldSplit
+
+            # initialize potential positions to where this node is
+            copyPos = copyPosition(d)
+            if shouldSplit
+                for subNode in d.subNodes
+                    for body in subNode.moment.bodies
+                        d3data._contractions["body: #{ body.key_self }"] = copyPos
+            else
+                for subnode in d.subNodes
+                    d3data._contractions["moment: #{ subNode.key_moment }"] = copyPos
+
+            scheduleRecreateGraph()
+        )
 
 
 
@@ -324,6 +351,18 @@ resize = () ->
     # TODO: make resizing better
     $('#sidebar').height(window.innerHeight)
     recreateVisualization()
+
+
+
+changeEditMode = (newEditMode) ->
+    editMode = newEditMode
+    dataContainer.attr('class', editMode)
+
+    # d3.select('rect#no-drag').on('mousedown.drag', null);
+    # force.on('mousedown.drag', null)
+    # scheduleRecreateGraph()
+    # if editMode == 'info'
+    recreateGraph()
 
 
 
@@ -366,6 +405,7 @@ $ ->
         return true
     )
 
+    # edit mode change
     $('#sidebarTabs a').click( (e) ->
         e.preventDefault()
         $(this).tab('show')
@@ -374,12 +414,11 @@ $ ->
         if href?
              newEditMode = href.split('tabcontent-')[1]
              if newEditMode of editModes
-                editMode = newEditMode
-                dataContainer.attr('class', editMode)
+                changeEditMode(newEditMode)
+
     )
 
 
     window.onresize = resize
     resize()
-
 

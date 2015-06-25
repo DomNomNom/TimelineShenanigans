@@ -210,6 +210,7 @@ class Graph
 
         # create direct pointers for links
         for id, body of @bodies
+            body.key_self = id
             body.prev = []
             body.next = []
             body.links_prev = []
@@ -237,6 +238,7 @@ class Graph
             delete description.bodies
 
         for id, body of @bodies
+            delete body.key_self
             delete body.prev
             delete body.next
             delete body.links_prev

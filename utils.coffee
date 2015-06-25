@@ -7,6 +7,20 @@ window.assert = (condition, message) ->
     if not condition
         throw message or "Assertion failed"
 
+# are any true?
+window.any = (list) ->
+    for x in list
+        if x
+            return true
+    return false
+
+# are all true?
+window.all = (list) ->
+    for x in list
+        if not x
+            return false
+    return false
+
 window.extendArray = (array, toAppend) ->
     Array.prototype.push.apply(array, toAppend)
 

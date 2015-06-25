@@ -17,9 +17,9 @@
     fill: #448;
 }
 
-/*.contract .node                {   fill: #11f; }*/
-.contract .node.uncontractible {   fill: #fa1; }
-
+/* colour nodes depending on edit mode */
+.contract .node.uncontractible { fill: #fa1; }
+.split    .node.split          { fill: #11f; }
 
 .link {
     stroke: #999;

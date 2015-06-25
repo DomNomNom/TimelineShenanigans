@@ -84,6 +84,9 @@ window.createD3data = (graph, bodyIsInteresting, previousData) ->
         body.d3node = d3node
 
     # some assertions
+    for id, d3node of d3nodes
+        assert 'moment' of d3node
+        assert d3node.bodies.length >= 1
     for momentID, moment in graph.moments
         if  moment.split
             assert "moment: #{ momentID }" not of d3nodes
@@ -232,13 +235,12 @@ window.createD3data = (graph, bodyIsInteresting, previousData) ->
             contraction.x     = previous.x
             contraction.y     = previous.y
             contraction.fixed = previous.fixed
+        # else
+        #     console.log  'notfound: ' + contractionID
 
         contractions[contractionID] = contraction
         for d3node in subNodes
             delete d3nodeQueue[d3node.id]
-            if d3node.hasOwnProperty('contraction')
-                console.log 'shit'
-                console.log d3node
             assert not d3node.hasOwnProperty('contraction')
             d3node.contraction = contraction
 
