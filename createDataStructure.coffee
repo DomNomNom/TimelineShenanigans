@@ -1,3 +1,5 @@
+"use strict"
+
 ###
 This file turns the existing data structure into
 something more suitable

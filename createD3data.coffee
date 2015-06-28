@@ -1,3 +1,5 @@
+"use strict"
+
 # moments can be split (bodies can be merged into moments)
 # moments can choose to be not contractible
 # d3nodes are always contracted
