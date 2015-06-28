@@ -30,12 +30,13 @@ window.flatten = (lists) ->
         extendArray(flat, list)
     return flat
 
+# math function
+window.sqrt = Math.sqrt
 window.lerp = (a, b, t) ->
     (1.0 - t) * a   +   t * b
 
-
 window.length = (dx, dy) ->
-    Math.sqrt(dx*dx + dy*dy)
+    sqrt(dx*dx + dy*dy)
 
 
 # padds a string to be of a certian width

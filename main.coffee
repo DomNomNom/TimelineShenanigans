@@ -297,7 +297,7 @@ recreateGraph = () ->
 
             return cls
         )
-        .attr("r", (d) -> 10 )  # radius
+        .attr("r", (d) -> 8 + 2.0 * sqrt(d.subNodes.length) )  # radius
         # .call(force.drag)
 
 
