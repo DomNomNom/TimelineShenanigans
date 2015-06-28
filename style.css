@@ -13,9 +13,8 @@
     stroke: #fff;
 }
 
-.node.split {
-    fill: #448;
-}
+.node.split          {    fill: #448;   }
+.node.uncontractible {    fill: #864;   }
 
 /* colour nodes depending on edit mode */
 .contract .node.uncontractible { fill: #fa1; }

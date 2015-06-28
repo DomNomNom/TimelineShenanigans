@@ -20,15 +20,6 @@ editModes = {
     'split':    '#tab-split'
 }
 
-# onEdit = () ->
-#     assert selectedNode?
-#     momentToEdit = selectedNode.subNodes[0].moment
-#     assert momentToEdit
-#     momentToEdit.contractible = $('#edit-contractible').is(':checked')
-#     for subnode in selectedNode.subNodes
-#         subnode.moment.split = $('#edit-split').is(':checked')
-#     onNodeSelect(null)
-#     scheduleRecreateGraph()
 
 onNodeSelect = (node) ->
     selectedNode = node
@@ -217,11 +208,9 @@ recreateVisualization = () ->
         .on("dragstart", (d) ->
             d3.event.sourceEvent.stopPropagation()
 
-            if editMode != 'info'
-                console.warn('invalid editMode: ' + editMode)
-                return
+            if editMode == 'info'
+                onNodeSelect(d)
 
-            onNodeSelect(d)
 
             d.dragstart_x = d.x
             d.dragstart_y = d.y
@@ -231,21 +220,15 @@ recreateVisualization = () ->
             d3.select(this).classed("fixed", d.fixed)
         )
         .on("dragend", (d) ->
-            # if editMode is not 'info'
-            #     console.log this
-            #     onNodeSelect(null)
-            #     d.fixed = false
-            #     d3.select(this).classed("fixed", d.fixed)
-            #     return
 
             dragDistance = length(
                 d.dragstart_x - d.x,
                 d.dragstart_y - d.y
             )
 
-            fixed = dragDistance > 10 || !d.startedFixed
+            fixed = dragDistance > 10 or not d.startedFixed
 
-            if not fixed
+            if not fixed or editMode != 'info'
                 onNodeSelect(null)
 
             d3.select(this).classed("fixed", d.fixed = fixed)
@@ -305,8 +288,8 @@ recreateGraph = () ->
 
 
     # set up interaction for nodes
+    node.call(force.drag)
     if editMode == 'info'
-        node.call(force.drag)
     else if editMode == 'contract'
         node.on('click', (d) ->
             onNodeSelect(null)
