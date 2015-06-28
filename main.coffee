@@ -165,8 +165,8 @@ recreateVisualization = () ->
                 vx /= lenV
                 vy /= lenV
 
-                x_target -= 10 * vx
-                y_target -= 10 * vy
+                x_target -= d.target.radius * vx
+                y_target -= d.target.radius * vy
 
 
                 # tangent
@@ -297,7 +297,10 @@ recreateGraph = () ->
 
             return cls
         )
-        .attr("r", (d) -> 8 + 2.0 * sqrt(d.subNodes.length) )  # radius
+        .attr("r", (d) ->
+            d.radius = 8 + 2.0 * sqrt(d.subNodes.length)
+            return d.radius
+        )
         # .call(force.drag)
 
 
