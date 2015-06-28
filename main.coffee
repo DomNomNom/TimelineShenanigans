@@ -217,18 +217,17 @@ recreateVisualization = () ->
         .on("dragstart", (d) ->
             d3.event.sourceEvent.stopPropagation()
 
-
-            if editMode == 'info'
-                onNodeSelect(d)
-                d.fixed = true
-
-                d.dragstart_x = d.x
-                d.dragstart_y = d.y
-                d.startedFixed = if d.fixed & 1 then true else false
-
-            else
+            if editMode != 'info'
                 console.warn('invalid editMode: ' + editMode)
+                return
 
+            onNodeSelect(d)
+
+            d.dragstart_x = d.x
+            d.dragstart_y = d.y
+            d.startedFixed = if d.fixed & 1 then true else false
+
+            d.fixed = true
             d3.select(this).classed("fixed", d.fixed)
         )
         .on("dragend", (d) ->

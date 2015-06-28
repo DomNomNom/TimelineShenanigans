@@ -152,6 +152,8 @@ window.createD3data = (graph, bodyIsInteresting, previousData) ->
             numWasContractible += 1
         d3node.prev = contractible
         d3node.next = contractible
+        d3node.prevNum = 0
+        d3node.nextNum = 0
         d3node.id = id
 
 
@@ -159,6 +161,8 @@ window.createD3data = (graph, bodyIsInteresting, previousData) ->
         node_prev = d3link.node_prev
         node_next = d3link.node_next
 
+        node_prev.prevNum += 1
+        node_next.nextNum += 1
         if node_prev.next is false
         else if node_prev.next is true
             node_prev.next = node_next
@@ -203,9 +207,12 @@ window.createD3data = (graph, bodyIsInteresting, previousData) ->
         # addToContractionMap(start)
         subNodes = [ start ]  # what is included in this contaction (ordered)
 
+        check = (d3node) ->
+            return d3node.prevNum == d3node.nextNum
+
         # add previous things
         current = start
-        while current.prev not in [true, false] and current.prev.next is current
+        while current.prev not in [true, false] and current.prev.next is current and check(current) and check(current.prev)
             current = current.prev
             if current is start
                 log 'a cyclic contraction'
@@ -214,7 +221,7 @@ window.createD3data = (graph, bodyIsInteresting, previousData) ->
 
         # add next things
         current = start
-        while current.next not in [true, false] and current.next.prev is current
+        while current.next not in [true, false] and current.next.prev is current  and check(current) and check(current.next)
             current = current.next
             if current is subNodes[0]
                 warn 'a cyclic contraction where I did not expect it.'
