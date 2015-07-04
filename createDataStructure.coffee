@@ -72,9 +72,9 @@ Serialisation should care about ordering things so it can potentially be tract b
 
 
 
-
-
 class Graph
+
+
 
     constructor: (timelines) ->
 
@@ -82,7 +82,6 @@ class Graph
         @moments = {}
         for panelID, panel of timelines
             @moments[panelID] = {
-                panelID: panelID
                 contractible: true
                 split: false
             }
@@ -201,7 +200,7 @@ class Graph
             assert body.key_description of @descriptions
 
 
-    # this builds the direct links that are not represented in JSON
+    # this builds inferred data such as the direct links that are not represented in JSON
     buildPointers: () ->
 
         for id, description of @descriptions
@@ -251,7 +250,6 @@ class Graph
         for link in @links
             delete link.prev
             delete link.next
-
 
 window.Graph = Graph
 

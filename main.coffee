@@ -349,13 +349,18 @@ changeEditMode = (newEditMode) ->
     recreateGraph()
 
 
-
-
 $ ->
     colours[0] = '#2d65cd'  # make John's colour more visible
     # TODO: make caliborn (grey) more visible
 
     window.graph = new Graph(timelines)
+    graph.deletePointers()
+    serialized = serialize(graph)
+    $("#outuputu").html(serialized)
+    # blob = new Blob([serialized], {type: "text/plain;charset=utf-8"})
+    # saveAs(blob, "hello world.txt")
+    console.log 'yay'
+    return
 
     # create the list of interesting characters
     $('#filter-checkboxes input').each () ->

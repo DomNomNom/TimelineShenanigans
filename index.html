@@ -10,22 +10,19 @@
 <script type="text/javascript" charset="utf-8" src="jquery-ui/jquery-ui.min.js"></script>
 <script type="text/javascript" charset="utf-8" src="jquery-tree/jquery.tree.min.js"></script>
 <script type="text/javascript" charset="utf-8" src="d3.js"></script>
+<script type="text/javascript" charset="utf-8" src="filesaver.js"></script>
 
-
-<!--
-<script type="text/javascript" src="buildBackLinks.js"></script>
-<script type="text/javascript" src="processTimelines.js"></script>
- -->
 
 <!-- compiled coffeescript (we have some code to handle the case when they don't exist) -->
 <script type="text/javascript" src="compiledCoffeeScript/utils.js"></script>
 <script type="text/javascript" src="compiledCoffeeScript/createD3data.js"></script>
 <script type="text/javascript" src="compiledCoffeeScript/createDataStructure.js"></script>
+<script type="text/javascript" src="compiledCoffeeScript/serialize.js"></script>
 <script type="text/javascript" src="compiledCoffeeScript/main.js"></script>
 
 
 
-
+<!-- css -->
 <link href="jquery-ui/jquery-ui.min.css" rel="stylesheet" type="text/css">
 <link href="jquery-tree/jquery.tree.min.css" rel="stylesheet" type="text/css">
 <link href="bootstrap/css/bootstrap-slate.css" rel="stylesheet" type="text/css">
@@ -41,6 +38,8 @@
   <div class="row">
     <div class="col-sm-9">
         <div id="graph-container">
+          <pre id="outuputu"></pre>
+          <!-- <textarea rows="30" cols="100" id="outuputu"></textarea> -->
         </div>
     </div>
     <divb class="col-sm-3" id="sidebar">
@@ -342,6 +341,7 @@
         $('body').append('<script type="text/coffeescript" src="utils.coffee" />')
         $('body').append('<script type="text/coffeescript" src="createDataStructure.coffee" />')
         $('body').append('<script type="text/coffeescript" src="createD3data.coffee" />')
+        $('body').append('<script type="text/coffeescript" src="serialize.coffee" />')
         $('body').append('<script type="text/coffeescript" src="main.coffee" />')
         $('body').append('<script type="text/javascript" charset="utf-8" src="coffee-script.js" />')
       }
