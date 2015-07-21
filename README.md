@@ -1,4 +1,4 @@
 # TimelineShenanigans
 A visualization of Homestucks timelines using force directed graph layout.
 
-Copyright Dominik Schmid.
+Unless stated otherwise, © Dominik Schmid
