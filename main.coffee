@@ -34,7 +34,7 @@ onNodeSelect = (node) ->
             panelID = subnode.moment.panelID
             html_panel += """
                 <a
-                 href="http://mspaintadventures.com/?s=6&p=#{ pad(panelID, 6) }"
+                 href="https://www.homestuck.com/story/#{ pad(panelID, 6) }"
                  target="_blank"
                 >
                     #{ panelID }
